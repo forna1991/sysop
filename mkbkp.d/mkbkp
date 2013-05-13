@@ -1,0 +1,113 @@
+Markers: (!!) notice, (II) informational, (WW) warning, (EE) error
+(!!) Creazione log Mon May  6 13:13:36 2013
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:13:36 2013
+(II) impostazioni inserite : ./a.out -c -f test/dir/ test/file} 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:14:01 2013
+(II) impostazioni inserite : ./a.out -c -f asd test/dir/ test/file1 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:14:07 2013
+(II) impostazioni inserite : ./a.out -c -f asd test/dir/ test/file1 test/file2 test/file3 test/file4 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:14:37 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:14:44 2013
+(II) impostazioni inserite : ./a.out -x -f asda 
+(EE) File di backup non trovato alla posizione (null)(II) Nuova esecuzione del programma al tempo: Mon May  6 13:24:56 2013
+(II) impostazioni inserite : ./a.out -t asd 
+(II) Lettura archivio
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:30:24 2013
+(II) impostazioni inserite : ./a.out -c -f asd test/dir/ test/file1 test/file2 test/file3 test/file4 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:32:41 2013
+(II) impostazioni inserite : ./a.out -t asd 
+(II) Lettura archivio
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:41:20 2013
+(II) impostazioni inserite : ./a.out -t asd 
+(II) Lettura archivio
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:46:58 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:47:28 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:47:51 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:48:04 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:50:19 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:53:17 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:53:36 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:54:49 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:55:03 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:55:28 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:55:57 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:56:06 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:58:29 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 13:58:44 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:00:29 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:04:42 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:05:15 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:05:46 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:06:52 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:09:03 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:10:48 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:12:01 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:12:49 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:13:16 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:13:22 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:13:26 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:18:37 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:20:57 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:22:19 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:22:22 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:22:49 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:23:44 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:27:20 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:28:04 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:28:57 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:29:50 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:30:26 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:34:17 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May  6 14:39:59 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Tue May  7 10:10:30 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Tue May  7 10:11:14 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Tue May  7 10:23:35 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Tue May  7 10:25:10 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Tue May  7 10:28:02 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Tue May  7 10:28:13 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
