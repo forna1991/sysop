@@ -111,3 +111,17 @@ Markers: (!!) notice, (II) informational, (WW) warning, (EE) error
 (II) impostazioni inserite : ./a.out -x -f asd 
 (II) Nuova esecuzione del programma al tempo: Tue May  7 10:28:13 2013
 (II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May 13 16:49:26 2013
+(II) impostazioni inserite : ./a.out -c -f asd test/ 
+(II) Nuova esecuzione del programma al tempo: Mon May 13 17:16:52 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May 13 17:18:20 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May 13 17:20:05 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May 13 17:20:57 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May 13 17:22:10 2013
+(II) impostazioni inserite : ./a.out -x -f asd 
+(II) Nuova esecuzione del programma al tempo: Mon May 13 17:24:27 2013
+(II) impostazioni inserite : ./a.out -x -f asd 

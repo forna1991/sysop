@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <fcntl.h>
 
 int fflag = 0;
 int xflag = 0;
@@ -24,6 +25,7 @@ char* getTime();
 void print(FILE *);
 void extractBkp(FILE *);
 void recMkdir(const char *);
+char *shiftString(const char *, int, int);
 
 main (int argc, char **argv) {
     int index;
@@ -238,7 +240,7 @@ void extractBkp(FILE * bkp) {
 	char * tmp = malloc(snprintf(NULL, 0, "%s","") + 1);
 	char ch;
 	int i;
-	sprintf(basepath, "%s", fvalue);
+	sprintf(basepath, "%s%s", fvalue, "_d");
 	FILE * out;
 	if(basepath[strlen(basepath)-1]!='/') {
 		sprintf(basepath, "%s%s",basepath ,"/");
@@ -266,21 +268,55 @@ void extractBkp(FILE * bkp) {
 }
 
 void recMkdir(const char *dir){
+	printf("%s\n","recMkdir entro" );
 	int i = 0;
 	int j = 0;
+	int h = 0;
 	char * tmp;
-	strcpy(tmp, dir);
-	if (tmp[i]=='.' || tmp[i]=='/') {
-		strncpy(tmp,tmp,)
-		printf("%s\n", tmp);
+	char * folder;
+	while(dir[j] != '\0') {
+		while (dir[i]=='.' || dir[i]=='/') i++;
+		j = i+1;
+		while(dir[j]!='/') j++;
+	  	printf("%s\n", "sto per fare finta di entrare");
+		folder = shiftString (dir, i, j-i);
+   		printf("%s\n", "ho appena fatto finta di entrare");
+		mkdir(folder, S_IRWXU);
+		i = j;
 	}
+	printf("%s\n","recMkdir esco" );
 }
 
-char * shiftString(char * source) {
-	int i;
-	int len = strlen(source);
-	char * retval = malloc();
-	for (i = 0; i++, i<len-1) {
+char *shiftString(const char *string, int position, int length) {
+   char *pointer;
+   int c;
 
-	}
+   printf("%s %s %i %i\n", "shifto la stringa ", string, position, length);
+ 
+   pointer = malloc(length+1);
+ 
+   if (pointer == NULL)
+   {
+      printf("Unable to allocate memory.\n");
+      exit(EXIT_FAILURE);
+   }
+ 
+   printf("%s", "before fors\n");
+   for (c = 0 ; c < position -1 ; c++) 
+      string++; 
+
+
+   printf("%s", "between fors\n");
+ 
+   for (c = 0 ; c < length ; c++)
+   {
+      *(pointer+c) = *string;      
+      string++;   
+   }
+ 
+   *(pointer+c) = '\0';
+
+   printf("%s\n", "finito di shiftare la stringa");
+ 
+   return pointer;
 }
