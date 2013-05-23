@@ -1,3 +1,10 @@
+/* 
+ * File:   mkbkp.c
+ * Author: forna
+ *
+ * Created on 23 maggio 2013, 10.50
+ */
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -159,12 +166,14 @@ void work(int code, int optindex, int argc, char** targets) {
 		}
 	} else if (code == 1) {
 		if (file = fopen(fvalue, "r")) {
+			//logger info eseguo la scrittura
 			extractBkp(file);
 		} else {
 			fprintf(logger, "(EE) File di backup non trovato alla posizione %s\n", tvalue);
 			printf("file di backup non trovato\n");
 		}
 	} else if (code == 2) {
+		//logger info eseguo la creazione del backup
 		if(file = fopen(fvalue, "r")) {
 			fclose(file);
 			remove(fvalue);
@@ -189,18 +198,25 @@ void createBackup(char* path, char* bkpPath, char* target) {
 		
 	if( stat(tmp,&s) == 0 ) {
 	    if( s.st_mode & S_IFREG ) {
+	    	int count = 1;
+	        char ch;
 	    	char* tm = malloc(snprintf(NULL, 0, "%s\n",tmp) + 1);
 			sprintf(tm, "%s\n",tmp);
 	        printf("sono uno bellissimo fil %s\n", tmp);
-	        char ch;
 	        ofile = fopen(bkpPath, "a");
 	        ifile = fopen(tmp, "r");
 	        fputs(tm, ofile);
-	        while(1) {
+	        ch = getc(ifile);
+	        while(ch!=EOF) {
+	        	count++;
 			    ch = getc(ifile);
-			    putc(ch,ofile);
-			    if(ch==EOF)
-			    	break;
+	    	}
+	    	int i;
+	        ifile = fopen(tmp, "r");
+			sprintf(tm, "%i\n",count); //TODO vedere come lanciare in output un intero
+	    	for (i=0; i<count; ++i) {
+	        	ch = getc(ifile);
+	        	fputc(ch, ofile);
 	    	}
 		} else if ( s.st_mode & S_IFDIR ) {
 				
@@ -276,11 +292,11 @@ void recMkdir(const char *dir){
 	char * folder;
 	while(dir[j] != '\0') {
 		while (dir[i]=='.' || dir[i]=='/') i++;
-		j = i+1;
+		j = i++;
 		while(dir[j]!='/') j++;
 	  	printf("%s\n", "sto per fare finta di entrare");
-		folder = shiftString (dir, i, j-i);
-   		printf("%s\n", "ho appena fatto finta di entrare");
+		folder = shiftString (dir, i, (j+1)-i);
+   		printf("%s %s\n", "ho appena fatto finta di entrare", folder);
 		mkdir(folder, S_IRWXU);
 		i = j;
 	}
