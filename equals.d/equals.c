@@ -11,6 +11,7 @@ char* getTime();
 int equals(char *, char *);
 
 int main(int argc, char **argv) {
+
 	openLog();
 
 	// stampa il comando inserito nel file di log
@@ -20,14 +21,47 @@ int main(int argc, char **argv) {
 		fprintf(logger, "%s ", argv[i]);
 	}
 	fprintf(logger, "\n");
+
+	// se gli argomenti non sono 3 ciao ./equals patha e pathb allora lo stampo a video
+	// lo stampo nel log e poi termino l'esecuzione
+	if(argc != 3){
+		fprintf(logger, "(EE) Wrong command -- usage : ./equals <path A> <path B> \n"); 
+		printf("Wrong command -- usage : ./equals <path A> <path B> \n" );
+		return 0;
+	}
+
+	// controllo che i due file/directory esistano sul disco altrimenti lo stampo nel log e a video
+	FILE *file;
+	if (!(file = fopen(argv[1],"r"))){
+		fprintf(logger, "(EE) File/directory %s non trovato \n",argv[1]); 
+		printf("(EE) File/directory %s non trovato \n",argv[1]); 
+		return 0;
+	}
+	fclose(file);
+	if (!(file = fopen(argv[2],"r"))){
+		fprintf(logger, "(EE) File/directory %s non trovato \n",argv[2]); 
+		printf("(EE) File/directory %s non trovato \n",argv[2]); 
+		return 0;
+	}
+	fclose(file);
+
+
+	// se i due file/directory coincidono perfettamente allora stampo video e nel log
+	// che coincidono altrimenti solo nel log che non coincidono
+	if(equals(argv[1],argv[2])){
+		fprintf(logger, "(II) %s e %s coincidono perfettamente\n",argv[1],argv[2]);
+		printf("%s e %s coincidono perfettamente\n",argv[1],argv[2]);
+	}else{
+		fprintf(logger, "(II) %s e %s non coincidono perfettamente\n",argv[1],argv[2]);
+	}
 }
 
 int equals(char * patha, char * pathb) {
 	//controllo sul pathing
 	//se e' una cartella rilanciare su tutti gli elementi
 	//se e' un file vedere se nell'altro path c'e' un file e nel caso confrontarli tra loro
-	/*int retval = 1; //TRUE
-	char * tmpa, tmpb;
+	int retval = 1; //TRUE
+	/*char * tmpa, tmpb;
 	struct stat a,b;
 	tmpa = malloc(256 * sizeof(char));
 	sprintf(tmpa, "%s",patha);
@@ -50,6 +84,7 @@ int equals(char * patha, char * pathb) {
 			}
 		}
 	}*/
+	return retval;
 }
 
 //funzione che ritorna la data sottoforma di stringa

@@ -25,7 +25,7 @@ Markers: (!!) notice, (II) informational, (WW) warning, (EE) error
 (II) er e (null) coincidono perfettamente
 (II) Nuova esecuzione del programma al tempo: Thu May 23 17:35:28 2013
 (II) Comando inserito : ./equals er er 
-(II) er e er coincidono perfettamente"))
+(II) er e er coincidono perfettamente
 (II) Nuova esecuzione del programma al tempo: Thu May 23 17:35:33 2013
 (II) Comando inserito : ./equals er 
 (EE) Wrong command -- usage : ./equals <path A> <path B> 
@@ -44,9 +44,3 @@ Markers: (!!) notice, (II) informational, (WW) warning, (EE) error
 (II) Nuova esecuzione del programma al tempo: Thu May 23 17:51:49 2013
 (II) Comando inserito : ./equals LogEquals sadasd 
 (EE) File/directory sadasd non trovato 
-(II) Nuova esecuzione del programma al tempo: Thu May 23 17:52:13 2013
-(II) Comando inserito : ./equals LogEquals /bin 
-(II) LogEquals e /bin coincidono perfettamente
-(II) Nuova esecuzione del programma al tempo: Thu May 23 17:52:39 2013
-(II) Comando inserito : ./equals LogEquals /bin 
-(II) LogEquals e /bin coincidono perfettamente
