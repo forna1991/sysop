@@ -283,24 +283,24 @@ void extractBkp(FILE * bkp) {
 	}
 }
 
-void recMkdir(const char *dir){
-	printf("%s\n","recMkdir entro" );
-	int i = 0;
-	int j = 0;
-	int h = 0;
-	char * tmp;
-	char * folder;
-	while(dir[j] != '\0') {
-		while (dir[i]=='.' || dir[i]=='/') i++;
-		j = i++;
-		while(dir[j]!='/') j++;
-	  	printf("%s\n", "sto per fare finta di entrare");
-		folder = shiftString (dir, i, (j+1)-i);
-   		printf("%s %s\n", "ho appena fatto finta di entrare", folder);
-		mkdir(folder, S_IRWXU);
-		i = j;
-	}
-	printf("%s\n","recMkdir esco" );
+static void recMkdir(const char *dir){
+	
+        char tmp[256];
+        char *p = NULL;
+        size_t len;
+ 
+        snprintf(tmp, sizeof(tmp),"%s",dir);
+        len = strlen(tmp);
+        if(tmp[len - 1] == '/')
+                tmp[len - 1] = 0;
+        for(p = tmp + 1; *p; p++)
+                if(*p == '/') {
+                        *p = 0;
+                        mkdir(tmp, S_IRWXU);
+                        *p = '/';
+                }
+        mkdir(tmp, S_IRWXU);
+
 }
 
 char *shiftString(const char *string, int position, int length) {
