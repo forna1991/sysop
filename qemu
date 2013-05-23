@@ -1,0 +1,1 @@
+ qemu-system-x86_64 -hda myDeb.img -boot c -localtime --usb -m 975 -redir tcp:2222::22
