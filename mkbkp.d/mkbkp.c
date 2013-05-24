@@ -23,6 +23,7 @@ int tflag = 0;
 char *fvalue = NULL;
 char *tvalue = NULL;
 FILE *logger;
+const char * backup_begin = "bkpfilemkbkptool";
 
 int checkInputs();
 void work(int, int, char**);
@@ -86,7 +87,7 @@ main(int argc, char **argv) {
  *	2* -> errore nel xflag
  *	3* -> errore nel cflag
  * 	40 -> target senza azioni da eseguire
- *	50 -> don't know what to do -.-"
+ *	50 -> don't know what to do
  */
 int checkInputs() {
     if (tflag == 1) {
@@ -174,18 +175,36 @@ void work(int optindex, int argc, char** targets) {
         abort();
     } else if (code == 0) {
         if (file = fopen(tvalue, "r")) {
-            fprintf(logger, "(II) Lettura del file di backup alla posizione "
-                    "%s\n", tvalue);
-            print(file);
+            char * str = malloc(256 * sizeof(char));
+            fscanf(file, "%s", str);
+            if (strcmp(str, backup_begin, backup_begin)) {
+                fprintf(logger, "(II) Lettura del file di backup alla posizione "
+                        "%s\n", tvalue);
+                print(file);
+            } else {
+                fprintf(logger, "(EE) Il file indicato non e' stato "
+                        "riconosciuto come file di backup %s\n", fvalue);
+                printf("Il file non sembra essere un file di backup aborting\n");
+                abort();
+            }
         } else {
             fprintf(logger, "(EE) File non trovato alla posizione %s\n", tvalue);
             printf("file non trovato\n");
         }
     } else if (code == 1) {
         if (file = fopen(fvalue, "r")) {
-            fprintf(logger, "(II) Estrazione del backup alla posizione %s nella"
-                    " posizione %s_d\n", tvalue, tvalue);
-            extractBkp(file);
+            char * str = malloc(256 * sizeof(char));
+            fscanf(file, "%s", str);
+            if (strcmp(str, backup_begin) == 0) {
+                fprintf(logger, "(II) Estrazione del backup alla posizione %s "
+                        "nella posizione %s_d\n", fvalue, fvalue);
+                extractBkp(file);
+            } else {
+                fprintf(logger, "(EE) Il file indicato non e' stato "
+                        "riconosciuto come file di backup %s\n", fvalue);
+                printf("Il file non sembra essere un file di backup aborting\n");
+                abort();
+            }
         } else {
             fprintf(logger, "(EE) File di backup non trovato alla posizione "
                     "%s\n", tvalue);
@@ -198,8 +217,11 @@ void work(int optindex, int argc, char** targets) {
         }
         fprintf(logger, "(!!) Inizio creazione del backup in %s\n", fvalue);
         for (i = optindex; i < argc; i++) {
+
             createBackup("./", fvalue, targets[i]);
         }
+        FILE *fl = fopen(fvalue, "a");
+        fprintf(fl, "%s\n", backup_begin);
     }
 }
 
@@ -238,7 +260,7 @@ void createBackup(char* path, char* bkpPath, char* target) {
             }
             int i;
             ifile = fopen(tmp, "r");
-            fprintf(ofile, "%d", count); //TODO vedere come lanciare in output un intero
+            fprintf(ofile, "%d", count);
             for (i = 0; i < count; ++i) {
                 ch = getc(ifile);
                 fputc(ch, ofile);
@@ -260,11 +282,16 @@ void createBackup(char* path, char* bkpPath, char* target) {
             closedir(dr);
         }
     } else {
+
         fprintf(logger, "(WW) File non esistente \"%s\"\n", tmp);
     }
 }
 
-void print(FILE *f) {
+/**
+ * metodo che restituisce in output il contenuto di un file di backup
+ * @param f file di backup da leggere
+ */
+void print(FILE *f) { //TODO fare un controllo sul file
     char * path = malloc(snprintf(NULL, 0, "%s", "") + 1);
     char ch;
     int chars;
@@ -273,11 +300,16 @@ void print(FILE *f) {
         printf("%s\tsize: %lu\n", path, (chars * sizeof (char)));
         int i;
         for (i = 0; i < chars; i++) {
+
             ch = getc(f);
         }
     }
 }
 
+/**
+ * 
+ * @param bkp file di backup da cui estrarre
+ */
 void extractBkp(FILE * bkp) {
     char * path = malloc(snprintf(NULL, 0, "%s", "") + 1);
     char * basepath = malloc(snprintf(NULL, 0, "%s", "") + 1);
@@ -307,6 +339,7 @@ void extractBkp(FILE * bkp) {
 
         out = fopen(full, "a+");
         for (i = 0; i < count; i++) {
+
             ch = getc(bkp);
             putc(ch, out);
         }
@@ -325,6 +358,7 @@ static void recMkdir(const char *dir) {
         tmp[len - 1] = 0;
     for (p = tmp + 1; *p; p++)
         if (*p == '/') {
+
             *p = 0;
             mkdir(tmp, S_IRWXU);
             *p = '/';
