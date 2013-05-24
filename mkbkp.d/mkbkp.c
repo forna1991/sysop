@@ -175,9 +175,10 @@ void work(int optindex, int argc, char** targets) {
         abort();
     } else if (code == 0) {
         if (file = fopen(tvalue, "r")) {
-            char * str = malloc(256 * sizeof(char));
+            char * str = malloc(256 * sizeof (char));
             fscanf(file, "%s", str);
-            if (strcmp(str, backup_begin, backup_begin)) {
+            if (strncmp(str, backup_begin,
+                    sizeof (char) * strlen(backup_begin)) == 0) {
                 fprintf(logger, "(II) Lettura del file di backup alla posizione "
                         "%s\n", tvalue);
                 print(file);
@@ -193,9 +194,11 @@ void work(int optindex, int argc, char** targets) {
         }
     } else if (code == 1) {
         if (file = fopen(fvalue, "r")) {
-            char * str = malloc(256 * sizeof(char));
+            char * str = malloc(256 * sizeof (char));
             fscanf(file, "%s", str);
-            if (strcmp(str, backup_begin) == 0) {
+            printf("%s\t%s", str, backup_begin);
+            if (strncmp(str, backup_begin,
+                    sizeof (char) * strlen(backup_begin)) == 0) {
                 fprintf(logger, "(II) Estrazione del backup alla posizione %s "
                         "nella posizione %s_d\n", fvalue, fvalue);
                 extractBkp(file);
