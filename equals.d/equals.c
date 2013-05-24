@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <string.h>
 #include <sys/types.h>
 
 FILE *logger;
@@ -9,6 +10,8 @@ FILE *logger;
 int openLog();
 char* getTime();
 int equals(char *, char *);
+int contains(char *,char *);
+int confontafile(char * file1,char *file2);
 
 int main(int argc, char **argv) {
 
@@ -61,30 +64,46 @@ int equals(char * patha, char * pathb) {
 	//se e' una cartella rilanciare su tutti gli elementi
 	//se e' un file vedere se nell'altro path c'e' un file e nel caso confrontarli tra loro
 	int retval = 1; //TRUE
-	/*char * tmpa, tmpb;
+	char * tmpa, *tmpb;
 	struct stat a,b;
 	tmpa = malloc(256 * sizeof(char));
 	sprintf(tmpa, "%s",patha);
 	tmpb = malloc(256 * sizeof(char));
 	sprintf(tmpb, "%s",pathb);
 
-	if( stat(tmpa,&a) == 0 && stat(tmpb,&b)) {	
+	if( stat(tmpa,&a) == 0 && stat(tmpb,&b) == 0) {	
 		if( a.st_mode & S_IFREG ) {
-			if( s.st_mode & S_IFREG ) {
+			if( b.st_mode & S_IFREG ) {
 				//scorrere tutti e due i file e se differiscono stampare i path
 				//e scrivere che sono differenti
-			} else if( s.st_mode & S_IFDIR ) {
+				if(confontafile(tmpa,tmpb)){
+					return 1;
+				}else{
+					printf("%s e %s sono differrenti\n",tmpa,tmpb );
+					return 0;
+				}
+			} else if( b.st_mode & S_IFDIR ) {
 				//stampare che uno dei due e' una cartella
 			}	
 		} else if( a.st_mode & S_IFDIR ) {
-			if( s.st_mode & S_IFREG ) {
+			if( b.st_mode & S_IFREG ) {
 				//stampare che uno dei due file e' una cartella
-			} else if( s.st_mode & S_IFDIR ) {
+			} else if( b.st_mode & S_IFDIR ) {
 				//lanciare ricorsivamente su tutti i sottofile delle due cartelle
 			}
 		}
-	}*/
+	}
 	return retval;
+}
+
+int confontafile(char * file1,char *file2){
+	if(!strcmp(file1,file2)){
+		return 1;
+	}
+}
+
+int contains(char * dir,char *filename){
+
 }
 
 //funzione che ritorna la data sottoforma di stringa

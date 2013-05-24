@@ -50,3 +50,42 @@ Markers: (!!) notice, (II) informational, (WW) warning, (EE) error
 (II) Nuova esecuzione del programma al tempo: Thu May 23 17:52:39 2013
 (II) Comando inserito : ./equals LogEquals /bin 
 (II) LogEquals e /bin coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:37:18 2013
+(II) Comando inserito : ./equals 
+(EE) Wrong command -- usage : ./equals <path A> <path B> 
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:37:22 2013
+(II) Comando inserito : ./equals asd dsa 
+(EE) File/directory asd non trovato 
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:37:35 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:43:04 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:43:32 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile non coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:44:54 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:45:19 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:46:44 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile non coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:46:56 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile non coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:46:59 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile non coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:47:19 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:47:31 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile non coincidono perfettamente
+(II) Nuova esecuzione del programma al tempo: Fri May 24 16:47:52 2013
+(II) Comando inserito : ./equals Makefile Makefile 
+(II) Makefile e Makefile coincidono perfettamente
