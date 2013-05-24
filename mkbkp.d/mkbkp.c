@@ -33,7 +33,6 @@ char* getTime();
 void print(FILE *);
 void extractBkp(FILE *);
 static void recMkdir(const char *);
-char *shiftString(const char *, int, int);
 
 main(int argc, char **argv) {
     int index;
@@ -218,7 +217,7 @@ void work(int optindex, int argc, char** targets) {
             fclose(file);
             remove(fvalue);
         }
-        fprintf(logger, "(!!) Inizio creazione del backup in %s\n", fvalue);
+        fprintf(logger, "(II) Inizio creazione del backup in %s\n", fvalue);
         for (i = optindex; i < argc; i++) {
 
             createBackup("./", fvalue, targets[i]);
@@ -235,7 +234,6 @@ void work(int optindex, int argc, char** targets) {
  * @param target percorso del file/cartella da aggiungere al backup
  */
 void createBackup(char* path, char* bkpPath, char* target) {
-    printf("%s\t%s\t%s\n", path, bkpPath, target);
     struct dirent *drnt;
     struct stat s;
     DIR *dr;
@@ -244,39 +242,39 @@ void createBackup(char* path, char* bkpPath, char* target) {
     FILE *ifile;
 
     tmp = malloc(snprintf(NULL, 0, "%s", target) + 1);
-    sprintf(tmp, "%s", target);
+    sprintf(tmp, "%s", target); //salvo il target in una variabile temporanea
 
-    if (stat(tmp, &s) == 0) {
-        if (s.st_mode & S_IFREG) {
-            int count = 0;
+    if (stat(tmp, &s) == 0) { //metodo per verificare se il path tmp e' una cartella
+        if (s.st_mode & S_IFREG) { //se e' un file lo aggiunge al bkp
+            int file_size = 0;
             char ch;
             char* tm = malloc(snprintf(NULL, 0, "%s\n", tmp) + 1);
             sprintf(tm, "%s\n", tmp);
             fprintf(logger, "(!!) File trovato %s\n", tmp);
             ofile = fopen(bkpPath, "a");
             ifile = fopen(tmp, "r");
-            fputs(tm, ofile);
+            fputs(tm, ofile); //out del path del file
             ch = getc(ifile);
-            while (ch != EOF) {
-                count++;
+            while (ch != EOF) { //controllo la lunghezza del file
+                file_size++;
                 ch = getc(ifile);
             }
             int i;
             ifile = fopen(tmp, "r");
-            fprintf(ofile, "%d", count);
-            for (i = 0; i < count; ++i) {
+            fprintf(ofile, "%d", file_size); //output della lunghezza del file
+            for (i = 0; i < file_size; ++i) { //output del file
                 ch = getc(ifile);
                 fputc(ch, ofile);
             }
-        } else if (s.st_mode & S_IFDIR) {
-
-            if (target[strlen(target) - 1] != '/') {
+        } else if (s.st_mode & S_IFDIR) { //caso in cui target e' una cartella
+            //aggiusto il path
+            if (target[strlen(target) - 1] != '/') { 
                 sprintf(target, "%s%s", target, "/");
             }
             fprintf(logger, "(!!) Directory trovata %s\n", target);
 
             dr = opendir(target);
-            while (drnt = readdir(dr)) {
+            while (drnt = readdir(dr)) { //riavvio la funzione ricorsivamente sugli elementi della cartella
                 sprintf(tmp, "%s%s", target, drnt->d_name);
                 if (strcmp(".", drnt->d_name) == 0 || strcmp("..", drnt->d_name) == 0)
                     continue;
@@ -285,7 +283,6 @@ void createBackup(char* path, char* bkpPath, char* target) {
             closedir(dr);
         }
     } else {
-
         fprintf(logger, "(WW) File non esistente \"%s\"\n", tmp);
     }
 }
@@ -294,23 +291,23 @@ void createBackup(char* path, char* bkpPath, char* target) {
  * metodo che restituisce in output il contenuto di un file di backup
  * @param f file di backup da leggere
  */
-void print(FILE *f) { //TODO fare un controllo sul file
+void print(FILE *f) { 
     char * path = malloc(snprintf(NULL, 0, "%s", "") + 1);
     char ch;
     int chars;
+    //scorro il file fino in fondo
     while (fscanf(f, "%s", path) != EOF) {
         fscanf(f, "%d", &chars);
         printf("%s\tsize: %lu\n", path, (chars * sizeof (char)));
         int i;
-        for (i = 0; i < chars; i++) {
-
+        for (i = 0; i < chars; i++) { //scorro tutti i byte del file
             ch = getc(f);
         }
     }
 }
 
 /**
- * 
+ * estrae il backup nella posizione %s_d con %s uguale al nome del file di bkp
  * @param bkp file di backup da cui estrarre
  */
 void extractBkp(FILE * bkp) {
@@ -319,15 +316,14 @@ void extractBkp(FILE * bkp) {
     char * tmp = malloc(snprintf(NULL, 0, "%s", "") + 1);
     char * full = malloc(256 * sizeof (char));
     char ch;
-    int i, file_size, count;
+    int i, file_size;
     sprintf(basepath, "%s%s", fvalue, "_d");
     FILE * out;
     if (basepath[strlen(basepath) - 1] != '/') {
         sprintf(basepath, "%s%s", basepath, "/");
     }
     while (fscanf(bkp, "%s", path) != EOF) {
-        fscanf(bkp, "%d", &count);
-        //printf("%s %s\n", basepath, path);
+        fscanf(bkp, "%d", &file_size);
         sprintf(tmp, "%s%s%s", "./", basepath, path);
         strcpy(full, tmp);
 
@@ -341,7 +337,7 @@ void extractBkp(FILE * bkp) {
         tmp[i + 1] = '/';
 
         out = fopen(full, "a+");
-        for (i = 0; i < count; i++) {
+        for (i = 0; i < file_size; i++) {
 
             ch = getc(bkp);
             putc(ch, out);
@@ -349,8 +345,14 @@ void extractBkp(FILE * bkp) {
     }
 }
 
+/**
+ * metodo per creare directory ricorsivamente (da stackoverflow)
+ * @param dir path da create
+ */
 static void recMkdir(const char *dir) {
 
+    fprintf(logger, "(!!) Creo il path %s\n", dir);
+    
     char tmp[256];
     char *p = NULL;
     size_t len;
@@ -368,36 +370,4 @@ static void recMkdir(const char *dir) {
         }
     mkdir(tmp, S_IRWXU);
 
-}
-
-char *shiftString(const char *string, int position, int length) {
-    char *pointer;
-    int c;
-
-    printf("%s %s %i %i\n", "shifto la stringa ", string, position, length);
-
-    pointer = malloc(length + 1);
-
-    if (pointer == NULL) {
-        printf("Unable to allocate memory.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    printf("%s", "before fors\n");
-    for (c = 0; c < position - 1; c++)
-        string++;
-
-
-    printf("%s", "between fors\n");
-
-    for (c = 0; c < length; c++) {
-        *(pointer + c) = *string;
-        string++;
-    }
-
-    *(pointer + c) = '\0';
-
-    printf("%s\n", "finito di shiftare la stringa");
-
-    return pointer;
 }
