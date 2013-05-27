@@ -20,7 +20,6 @@ int contains(char *,char *);
 int confontafile(char * file1,char *file2);
 int recursiveDirectory(char * patha, char * pathb);
 int numfileinddir(char * path);
-int comparePath(char * patha, char * pathb);
 int isSameLevel(char * patha, char * pathb);
 
 #endif	/* EQUALS_H */
