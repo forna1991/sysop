@@ -1,6 +1,5 @@
 #include "plive.h"
 
-
 //File di log
 FILE *logger;
 
@@ -141,13 +140,13 @@ void* printProc(void *arg){
 
 //stampa a video il parent pid e il nome del processo
 void printInfo(int pid){
-	char* target;
-	char *stringa;
-	char *ppid;
-	ppid = malloc(sizeof(char) * 256);
+	char target[256];
+	char stringa[256];
+	char ppid[256];
+	/*ppid = malloc(sizeof(char) * 256);
 	stringa = malloc(sizeof(char) * 256);
 
-	target = malloc(snprintf(NULL, 0, "/proc/%d/status",pid) + 1);
+	target = malloc(sizeof(char) * 256);*/
 	sprintf(target,"/proc/%d/status",pid);
 
 	int i=0;
@@ -166,9 +165,9 @@ void printInfo(int pid){
 		}
 	}
 	printf("\t%s", ppid);
-	free(ppid);
+	/*free(ppid);
 	free(stringa);
-	free(target);
+	free(target);*/
 	//
 }
 
@@ -177,15 +176,15 @@ void getArrayUserTime(struct data * array){
 	struct dirent *drnt;
  	struct stat s;
 	DIR *dr;
-	char* tmp;
-	char* target;
+	char tmp[256];
+	char target[256];
 	int pid = 0;
 
 	// prima della lettura azzera l'array
 	azzeraArray(array,LUNGHEZZA_ARRAY);
 
-	target = malloc(snprintf(NULL, 0, "%s","") + 1);
-	tmp = malloc(snprintf(NULL, 0, "%s","") + 1);
+	/*target = malloc(snprintf(NULL, 0, "%s","") + 1);
+	tmp = malloc(snprintf(NULL, 0, "%s","") + 1);*/
 	sprintf(target, "%s","/proc/");
 
 	//apre la cartella e guarda tutti i file e cartelle
@@ -210,8 +209,8 @@ void getArrayUserTime(struct data * array){
 	}
 	closedir(dr);
 
-	free(target);
-	free(tmp);
+	/*free(target);
+	free(tmp);*/
 }
 
 //funzione di suppoto che fa il sort di un array di tipo struct data

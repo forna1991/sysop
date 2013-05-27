@@ -26,4 +26,3 @@ void extractBkp(FILE *);
 static void recMkdir(const char *);
 
 #endif	/* MKBKP_H */
-

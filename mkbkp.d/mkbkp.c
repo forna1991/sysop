@@ -13,15 +13,6 @@ char *tvalue = NULL;
 FILE *logger;
 const char * backup_begin = "bkpfilemkbkptool";
 
-int checkInputs();
-void work(int, int, char**);
-void createBackup(char*, char*, char*);
-int openLog();
-char* getTime();
-void print(FILE *);
-void extractBkp(FILE *);
-static void recMkdir(const char *);
-
 main(int argc, char **argv) {
     int index;
     int c;
