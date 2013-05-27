@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <time.h>
 #include <string.h>
 #include <sys/types.h>
@@ -12,6 +13,8 @@ char* getTime();
 int equals(char *, char *);
 int contains(char *,char *);
 int confontafile(char * file1,char *file2);
+int recursiveDirectory(char * patha, char * pathb);
+int numfileinddir(char * path);
 
 int main(int argc, char **argv) {
 
@@ -51,12 +54,8 @@ int main(int argc, char **argv) {
 
 	// se i due file/directory coincidono perfettamente allora stampo video e nel log
 	// che coincidono altrimenti solo nel log che non coincidono
-	if(equals(argv[1],argv[2])){
-		fprintf(logger, "(II) %s e %s coincidono perfettamente\n",argv[1],argv[2]);
-		printf("%s e %s coincidono perfettamente\n",argv[1],argv[2]);
-	}else{
-		fprintf(logger, "(II) %s e %s non coincidono perfettamente\n",argv[1],argv[2]);
-	}
+	printf("%d\n",equals(argv[1],argv[2]));
+
 }
 
 int equals(char * patha, char * pathb) {
@@ -78,32 +77,128 @@ int equals(char * patha, char * pathb) {
 				//e scrivere che sono differenti
 				if(confontafile(tmpa,tmpb)){
 					return 1;
+					//printf("%s e %s coincidono perfettamente\n",tmpa,tmpb);
 				}else{
-					printf("%s e %s sono differrenti\n",tmpa,tmpb );
 					return 0;
+					//printf("%s e %s sono differrenti\n",tmpa,tmpb );
 				}
 			} else if( b.st_mode & S_IFDIR ) {
-				//stampare che uno dei due e' una cartella
+				return 0;
+				//printf("%s è un file e %s è una cartella -- impossibile confrontarli\n",tmpa,tmpb);
 			}	
 		} else if( a.st_mode & S_IFDIR ) {
 			if( b.st_mode & S_IFREG ) {
-				//stampare che uno dei due file e' una cartella
+				return 0;
+				//printf("%s è un file e %s è una cartella -- impossibile confrontarli\n",tmpb,tmpa);
 			} else if( b.st_mode & S_IFDIR ) {
-				//lanciare ricorsivamente su tutti i sottofile delle due cartelle
+				int r1=1,r2;
+				r1 = recursiveDirectory(tmpb,tmpa);
+				r2 = recursiveDirectory(tmpa,tmpb);
+				if(r1 == 1 && r2 == 1){
+					return 1;
+				}
+				else{
+					return 0;
+				}
 			}
 		}
 	}
 	return retval;
 }
 
-int confontafile(char * file1,char *file2){
-	if(!strcmp(file1,file2)){
-		return 1;
-	}
+int recursiveDirectory(char * patha, char * pathb){
+
+	struct dirent *drnt1;
+	struct dirent *drnt2;
+	DIR *dr1, *dr2;
+	dr1 = opendir(patha);
+	int retval=1;
+	int n1 = 0,n2 = 0;
+	char * tmp1,* tmp2;
+	tmp1 = malloc(256 * sizeof(char));
+	tmp2 = malloc(256 * sizeof(char));
+
+    while (drnt1 = readdir(dr1)) { //riavvio la funzione ricorsivamente sugli elementi della cartella
+        if (strcmp(".", drnt1->d_name) == 0 || strcmp("..", drnt1->d_name) == 0)
+            continue;
+        
+        dr2 = opendir(pathb);
+        int ret = 0;
+    	while (drnt2 = readdir(dr2)) {
+    		if (!(strcmp(".", drnt2->d_name) == 0 || strcmp("..", drnt2->d_name) == 0)){
+    			sprintf(tmp2,"%s/%s",pathb,drnt2->d_name);
+    			sprintf(tmp1,"%s/%s",patha,drnt1->d_name);
+    			//printf("%s %s\n",tmp1,tmp2);
+    			if(equals(tmp1,tmp2)){
+	    			ret = 1;
+	    			//printf("%s %s\n",tmp1,tmp2);
+	    		}
+    		}
+    	}
+    	closedir(dr2);
+    	if(!ret){
+    		retval = 0;
+    		struct stat a;
+    		if( stat(tmp1,&a) == 0){
+    			if(a.st_mode & S_IFREG){
+					printf("Non c'è un file in %s identico a %s\n", pathb,tmp1);
+				}
+    		}
+    	}
+
+    }
+    closedir(dr1);
+
+    n1 = numfileinddir(patha);
+    n2 = numfileinddir(pathb);
+
+    if(n1!=n2 && retval == 1){
+    	printf("%s e %s contengono un nuemro di elementi diverso\n", patha,pathb);
+    	retval = 0;
+    }
+
+    return retval;
 }
 
-int contains(char * dir,char *filename){
+int numfileinddir(char * path){
+	struct dirent *drnt;
+	DIR *dr;
+	dr = opendir(path);
+    int ret = 0;
+	while (drnt = readdir(dr)) {
+		if (!(strcmp(".", drnt->d_name) == 0 || strcmp("..", drnt->d_name) == 0)){
+			ret++;
+		}
+	}
+	closedir(dr);
+	return ret;
+}
 
+int confontafile(char * file1,char *file2){
+	/*if(strcmp(file1,file2)){
+		return 0;
+	}*/
+	//printf("%s %s\n", file1,file2);
+	char ch1,ch2;
+	FILE *f1,*f2;
+	f1=fopen(file1,"r");
+	f2=fopen(file2,"r");
+	ch1 = getc(f1);
+	ch2 = getc(f2); 
+	if(ch1 != ch2)
+		return 0;
+    while (ch1 != EOF || ch2 != EOF) {
+        if(ch1!=ch2){
+		    fclose(f1);
+		    fclose(f2);
+        	return 0;
+        }
+        ch2 = getc(f1);
+        ch1 = getc(f2);
+    }
+    fclose(f1);
+    fclose(f2);
+	return 1;
 }
 
 //funzione che ritorna la data sottoforma di stringa
