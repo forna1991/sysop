@@ -1,22 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <time.h>
-#include <string.h>
-#include <sys/types.h>
+#include "equals.h"
 
 FILE *logger;
-
-int openLog();
-char* getTime();
-int equals(char *, char *);
-int contains(char *,char *);
-int confontafile(char * file1,char *file2);
-int recursiveDirectory(char * patha, char * pathb);
-int numfileinddir(char * path);
-int comparePath(char * patha, char * pathb);
-int isSameLevel(char * patha, char * pathb);
 
 int main(int argc, char **argv) {
 
