@@ -1,8 +1,5 @@
 /* 
  * File:   mkbkp.c
- * Author: forna
- *
- * Created on 23 maggio 2013, 10.50
  */
 
 #include <ctype.h>
@@ -171,6 +168,12 @@ void work(int optindex, int argc, char** targets) {
     FILE *file;
     if (code >= 10) {
         fprintf(logger, "(EE) Errore negli input abort! \n");
+        printf("Errore nell\'input: Uso del programma \"mkbkp [options] [target]"
+                "\nOpzioni:\n\t-f [target] indica l\'obiettivo, necessario a "
+                    "opzioni quale -c o -x"
+                "\n\t-c indica la creazione del backup, deve essere associato"
+                    "a -t per indicare dove mettere il file"
+                "\n\t");
         abort();
     } else if (code == 0) {
         if (file = fopen(tvalue, "r")) {
@@ -219,7 +222,6 @@ void work(int optindex, int argc, char** targets) {
         }
         fprintf(logger, "(II) Inizio creazione del backup in %s\n", fvalue);
         for (i = optindex; i < argc; i++) {
-
             createBackup("./", fvalue, targets[i]);
         }
         FILE *fl = fopen(fvalue, "a");
@@ -313,7 +315,7 @@ void print(FILE *f) {
 void extractBkp(FILE * bkp) {
     char * path = malloc(snprintf(NULL, 0, "%s", "") + 1);
     char * basepath = malloc(snprintf(NULL, 0, "%s", "") + 1);
-    char * tmp = malloc(snprintf(NULL, 0, "%s", "") + 1);
+    char tmp[256] = "";
     char * full = malloc(256 * sizeof (char));
     char ch;
     int i, file_size;
@@ -332,17 +334,18 @@ void extractBkp(FILE * bkp) {
             i--;
         } while (tmp[i] != '/');
         tmp[i + 1] = '\0';
-        //printf("tua madre e' %s\n", tmp);
         recMkdir(tmp);
         tmp[i + 1] = '/';
 
         out = fopen(full, "a+");
         for (i = 0; i < file_size; i++) {
-
             ch = getc(bkp);
             putc(ch, out);
         }
     }
+    free(path);
+    free(basepath);
+    free(full);
 }
 
 /**
