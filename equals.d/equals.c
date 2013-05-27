@@ -15,6 +15,8 @@ int contains(char *,char *);
 int confontafile(char * file1,char *file2);
 int recursiveDirectory(char * patha, char * pathb);
 int numfileinddir(char * path);
+int comparePath(char * patha, char * pathb);
+int isSameLevel(char * patha, char * pathb);
 
 int main(int argc, char **argv) {
 
@@ -54,7 +56,10 @@ int main(int argc, char **argv) {
 
 	// se i due file/directory coincidono perfettamente allora stampo video e nel log
 	// che coincidono altrimenti solo nel log che non coincidono
-	printf("%d\n",equals(argv[1],argv[2]));
+	char pt1[1000],pt2[1000];
+	realpath(argv[1],pt1);
+	realpath(argv[2],pt2);
+	printf("\n\n%d\n\n",!equals(pt1,pt2));
 
 }
 
@@ -63,37 +68,30 @@ int equals(char * patha, char * pathb) {
 	//se e' una cartella rilanciare su tutti gli elementi
 	//se e' un file vedere se nell'altro path c'e' un file e nel caso confrontarli tra loro
 	int retval = 1; //TRUE
-	char * tmpa, *tmpb;
 	struct stat a,b;
-	tmpa = malloc(256 * sizeof(char));
-	sprintf(tmpa, "%s",patha);
-	tmpb = malloc(256 * sizeof(char));
-	sprintf(tmpb, "%s",pathb);
 
-	if( stat(tmpa,&a) == 0 && stat(tmpb,&b) == 0) {	
+	if( stat(patha,&a) == 0 && stat(pathb,&b) == 0) {	
 		if( a.st_mode & S_IFREG ) {
 			if( b.st_mode & S_IFREG ) {
 				//scorrere tutti e due i file e se differiscono stampare i path
 				//e scrivere che sono differenti
-				if(confontafile(tmpa,tmpb)){
+				if(confontafile(patha,pathb)){
 					return 1;
-					//printf("%s e %s coincidono perfettamente\n",tmpa,tmpb);
+					//printf("%s e %s coincidono perfettamente\n",patha,pathb);
 				}else{
 					return 0;
-					//printf("%s e %s sono differrenti\n",tmpa,tmpb );
+					//printf("%s e %s sono differrenti\n",patha,pathb );
 				}
 			} else if( b.st_mode & S_IFDIR ) {
 				return 0;
-				//printf("%s è un file e %s è una cartella -- impossibile confrontarli\n",tmpa,tmpb);
 			}	
 		} else if( a.st_mode & S_IFDIR ) {
 			if( b.st_mode & S_IFREG ) {
 				return 0;
-				//printf("%s è un file e %s è una cartella -- impossibile confrontarli\n",tmpb,tmpa);
 			} else if( b.st_mode & S_IFDIR ) {
 				int r1=1,r2;
-				r1 = recursiveDirectory(tmpb,tmpa);
-				r2 = recursiveDirectory(tmpa,tmpb);
+				r1 = recursiveDirectory(pathb,patha);
+				r2 = recursiveDirectory(patha,pathb);
 				if(r1 == 1 && r2 == 1){
 					return 1;
 				}
@@ -107,6 +105,10 @@ int equals(char * patha, char * pathb) {
 }
 
 int recursiveDirectory(char * patha, char * pathb){
+
+	if(!isSameLevel(patha,pathb)){
+		return 0;
+	}
 
 	struct dirent *drnt1;
 	struct dirent *drnt2;
@@ -157,7 +159,55 @@ int recursiveDirectory(char * patha, char * pathb){
     	retval = 0;
     }
 
+    free(tmp1);
+    free(tmp2);
+
     return retval;
+}
+
+int isSameLevel(char * patha, char * pathb){
+	int i,j;
+	int n1=0,n2=0;
+	char c1,c2;
+	c1 = patha[0];
+	c2 = pathb[0];
+	for(i=0; c1 != '\0';i++){
+		if(c1 == '/'){
+			n1++;
+		}
+		c1 = patha[i];
+	}
+	for(j=0; c2 != '\0';j++){
+		if(c2 == '/'){
+			n2++;
+		}
+		c2 = patha[j];
+	}
+
+	return n1 == n2;
+}
+
+int comparePath(char * patha, char * pathb){
+	char c1,c2;
+	c1 = patha[0];
+	c2 = pathb[0];
+	int i,j;
+	for (i = 0; c1 != '\0' && c1 != '/' ; ++i){
+		c1 = patha[i];
+	}
+	for (j = 0; c2 != '\0' && c2 != '/' ; ++j){
+		c2 = patha[j];
+	}
+
+	while(c1 != '\0' || c2 != '\0'){
+		if(c1!=c2){
+			return 0;
+		}
+		c1 = patha[++i];
+		c2 = pathb[++j];
+	}
+	return 1;
+
 }
 
 int numfileinddir(char * path){

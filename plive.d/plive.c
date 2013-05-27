@@ -198,6 +198,9 @@ void printInfo(int pid){
 		}
 	}
 	printf("\t%s", ppid);
+	free(ppid);
+	free(stringa);
+	free(target);
 	//
 }
 
@@ -238,6 +241,9 @@ void getArrayUserTime(struct data * array){
 		}
 	}
 	closedir(dr);
+
+	free(target);
+	free(tmp);
 }
 
 //funzione di suppoto che fa il sort di un array di tipo struct data
