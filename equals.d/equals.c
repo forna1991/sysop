@@ -43,7 +43,8 @@ int main(int argc, char **argv) {
     char pt1[1000], pt2[1000];
     realpath(argv[1], pt1);
     realpath(argv[2], pt2);
-    printf("\n\n%d\n\n", /*isSameLevel(pt1, pt2)/**/!equals(pt1, pt2)/**/);
+    
+    return !equals(pt1, pt2);
 
 }
 
@@ -67,10 +68,12 @@ int equals(char * patha, char * pathb) {
                     //printf("%s e %s sono differrenti\n",patha,pathb );
                 }
             } else if (b.st_mode & S_IFDIR) {
+                printf("%s è un file mentre %s è una cartella\n", patha, pathb);
                 return 0;
             }
         } else if (a.st_mode & S_IFDIR) {
             if (b.st_mode & S_IFREG) {
+                printf("%s è un file mentre %s è una cartella\n", pathb, patha);
                 return 0;
             } else if (b.st_mode & S_IFDIR) {
                 int r1 = 1;
