@@ -73,14 +73,8 @@ int equals(char * patha, char * pathb) {
             if (b.st_mode & S_IFREG) {
                 return 0;
             } else if (b.st_mode & S_IFDIR) {
-                int r1 = 1, r2;
-                r1 = recursiveDirectory(pathb, patha);
-                r2 = recursiveDirectory(patha, pathb);
-                if (r1 == 1 && r2 == 1) {
-                    return 1;
-                } else {
-                    return 0;
-                }
+                int r1 = 1;
+                return recursiveDirectory(pathb, patha);
             }
         }
     }
@@ -88,67 +82,49 @@ int equals(char * patha, char * pathb) {
 }
 
 int recursiveDirectory(char * patha, char * pathb) {
-
-/*
-    if (!isSameLevel(patha, pathb)) {
-        return 0;
-    }
-*/
-
     struct dirent **drnt1;
     struct dirent **drnt2;
-    int retval = 1, god = 1;
+    int retval = 1;
     int n1 = 0, n2 = 0;
+    int i, j;
     int check1 = 1, check2 = 1;
     char tmp1[256], tmp2[256];
-    
+
     n1 = scandir(patha, &drnt1, 0, alphasort);
     n2 = scandir(pathb, &drnt2, 0, alphasort);
-    
-    while (n1--) {
-        printf("%s\n", drnt1[n1]->d_name);
-    } 
-    
-    /*
-        while (drnt1 = readdir(dr1)) { //riavvio la funzione ricorsivamente sugli elementi della cartella
-            if (strcmp(".", drnt1->d_name) == 0 || strcmp("..", drnt1->d_name) == 0)
-                continue;
 
-            dr2 = opendir(pathb);
-            int ret = 0;
-            while (drnt2 = readdir(dr2)) {
-                if (!(strcmp(".", drnt2->d_name) == 0 || strcmp("..", drnt2->d_name) == 0)) {
-                    sprintf(tmp2, "%s/%s", pathb, drnt2->d_name);
-                    sprintf(tmp1, "%s/%s", patha, drnt1->d_name);
-                    //printf("%s %s\n",tmp1,tmp2);
-                    if (equals(tmp1, tmp2)) {
-                        ret = 1;
-                        //printf("%s %s\n",tmp1,tmp2);
-                    }
-                }
-            }
-            closedir(dr2);
-            if (!ret) {
-                retval = 0;
-                struct stat a;
-                if (stat(tmp1, &a) == 0) {
-                    if (a.st_mode & S_IFREG) {
-                        printf("Non c'è un file in %s identico a %s\n", pathb, tmp1);
-                    }
-                }
-            }
-
+    j = 2;
+    for (i = 2; i < n1 || j < n2;) {
+        int cmp;
+        //printf("debug %d %d %d %d\n", i, j, n1, n2);
+        if (i < n1 && j < n2) {
+            strcpy(tmp1, drnt1[i]->d_name);
+            strcpy(tmp2, drnt2[j]->d_name);
+            cmp = strcmp(tmp1, tmp2);
+            sprintf(tmp2, "%s/%s", pathb, drnt2[j]->d_name);
+            sprintf(tmp1, "%s/%s", patha, drnt1[i]->d_name);
+        } else if (i==n1) {
+            sprintf(tmp2, "%s/%s", pathb, drnt2[j]->d_name);
+            cmp = 1;
+        } else {
+            sprintf(tmp1, "%s/%s", patha, drnt1[i]->d_name);
+            cmp = -1;
         }
-     */
 
-    n1 = numfileinddir(patha);
-    n2 = numfileinddir(pathb);
-
-    if (n1 != n2 && retval == 1) {
-        printf("%s e %s contengono un nuemro di elementi diverso\n", patha, pathb);
-        retval = 0;
+        if (cmp == 0) {
+            i++;
+            j++;
+            equals(tmp1, tmp2);
+        } else if (cmp > 0) {
+            j++;
+            retval = 0;
+            printf("l'elemento %s non e\' presente in %s\n", tmp2, patha);
+        } else {
+            i++;
+            retval = 0;
+            printf("l'elemento %s non e\' presente in %s\n", tmp1, pathb);
+        }
     }
-
     return retval;
 }
 
