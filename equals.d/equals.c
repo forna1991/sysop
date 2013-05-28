@@ -208,6 +208,7 @@ int openLog() {
 
     // se non esiste lo crea e ci scrive 2 righe di informazione
     if (retval == 0) {
+        printf("%s : Nuovo file di log creato\n", getTime());
         fprintf(logger, "Markers: (!!) debug, (II) informational, (WW) warning, (EE) error\n");
         fprintf(logger, "(II) Creazione log %s", getTime());
     }
