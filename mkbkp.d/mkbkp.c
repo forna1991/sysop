@@ -11,12 +11,9 @@ int tflag = 0;
 char *fvalue = NULL;
 char *tvalue = NULL;
 FILE *logger;
-const char * backup_begin = "bkpfilemkbkptool";
 
 main(int argc, char **argv) {
-    int index;
     int c;
-    int error = -1;
     int i;
 
     openLog(); //apertura del file di log
@@ -185,24 +182,24 @@ int openLog() {
 void work(int optindex, int argc, char** targets) {
     int code = checkInputs();
     int i = 0;
+    char * cmp;
     FILE *file;
     if (code >= 10) {
         fprintf(logger, "(EE) Errore negli input abort! \n");
         exit(0);
     } else if (code == 0) {
         if (file = fopen(tvalue, "r")) {
-            char * str = malloc(256 * sizeof (char));
-            fscanf(file, "%s", str);
-            if (strncmp(str, backup_begin,
-                    sizeof (char) * strlen(backup_begin)) == 0) {
+            char * str = tvalue + strlen(tvalue) - 4;
+            int cmp = strcmp(str, ".bkp");
+            if (cmp == 0) { //se finisce con ".bkp"
                 fprintf(logger, "(II) Lettura del file di backup alla posizione "
                         "%s\n", tvalue);
                 print(file);
             } else {
                 fprintf(logger, "(EE) Il file indicato non e' stato "
                         "riconosciuto come file di backup %s\n", fvalue);
-                printf("Il file non sembra essere un file di backup aborting\n");
-                abort();
+                printf("Il file non sembra essere un file di backup exiting\n");
+                exit(0);
             }
         } else {
             fprintf(logger, "(EE) File non trovato alla posizione %s\n", tvalue);
@@ -210,36 +207,41 @@ void work(int optindex, int argc, char** targets) {
         }
     } else if (code == 1) {
         if (file = fopen(fvalue, "r")) {
-            char * str = malloc(256 * sizeof (char));
-            fscanf(file, "%s", str);
-            printf("%s\t%s", str, backup_begin);
-            if (strncmp(str, backup_begin,
-                    sizeof (char) * strlen(backup_begin)) == 0) {
+            char * rts = (fvalue + strlen(fvalue) - 4);
+            int cmp = strcmp(rts, ".bkp");
+            if (cmp == 0) { //se finisce con .bkp
                 fprintf(logger, "(II) Estrazione del backup alla posizione %s "
                         "nella posizione %s_d\n", fvalue, fvalue);
                 extractBkp(file);
             } else {
                 fprintf(logger, "(EE) Il file indicato non e' stato "
                         "riconosciuto come file di backup %s\n", fvalue);
-                printf("Il file non sembra essere un file di backup aborting\n");
-                abort();
+                printf("Il file non sembra essere un file di backup exiting\n");
+                exit(0);
             }
         } else {
             fprintf(logger, "(EE) File di backup non trovato alla posizione "
-                    "%s\n", tvalue);
-            printf("file di backup non trovato\n");
+                    "%s\n", fvalue);
+            printf("file di backup non trovato %s\n", fvalue);
         }
     } else if (code == 2) {
-        if (file = fopen(fvalue, "r")) {
+        char tmp[256];
+        char * str = fvalue + strlen(fvalue) - 4;
+        int cmp = strcmp(str, ".bkp");
+        if (cmp != 0 ) {
+            strcpy(tmp, fvalue);
+            sprintf(tmp, "%s.bkp", fvalue);
+        } else {
+            strcpy(tmp, fvalue);
+        }
+        if (file = fopen(tmp, "r")) {
             fclose(file);
-            remove(fvalue);
+            remove(tmp);
         }
         fprintf(logger, "(II) Inizio creazione del backup in %s\n", fvalue);
         for (i = optindex; i < argc; i++) {
-            createBackup("./", fvalue, targets[i]);
+            createBackup("./", tmp, targets[i]);
         }
-        FILE *fl = fopen(fvalue, "a");
-        fprintf(fl, "%s\n", backup_begin);
     }
 }
 
@@ -262,7 +264,6 @@ void createBackup(char* path, char* bkpPath, char* target) {
 
     if (stat(tmp, &s) == 0) { //metodo per verificare se il path tmp e' una cartella
         if (s.st_mode & S_IFREG) { //se e' un file lo aggiunge al bkp
-            int file_size = 0;
             char ch;
             char* tm = malloc(snprintf(NULL, 0, "%s\n", tmp) + 1);
             sprintf(tm, "%s\n", tmp);
@@ -270,15 +271,10 @@ void createBackup(char* path, char* bkpPath, char* target) {
             ofile = fopen(bkpPath, "a");
             ifile = fopen(tmp, "r");
             fputs(tm, ofile); //out del path del file
-            ch = getc(ifile);
-            while (ch != EOF) { //controllo la lunghezza del file
-                file_size++;
-                ch = getc(ifile);
-            }
             int i;
             ifile = fopen(tmp, "r");
-            fprintf(ofile, "%d", file_size); //output della lunghezza del file
-            for (i = 0; i < file_size; ++i) { //output del file
+            fprintf(ofile, "%d", s.st_size); //output della lunghezza del file
+            for (i = 0; i < s.st_size; ++i) { //output del file
                 ch = getc(ifile);
                 fputc(ch, ofile);
             }

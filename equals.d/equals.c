@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
     realpath(argv[2], pt2);
 
     retval = !equals(pt1, pt2);
+    printf("%d\n", retval);
     fclose(logger);
     return retval;
 
@@ -134,7 +135,7 @@ int recursiveDirectory(char * patha, char * pathb) {
         if (cmp == 0) {
             i++;
             j++;
-            equals(tmp1, tmp2);
+            retval = retval && equals(tmp1, tmp2);
         } else if (cmp > 0) {
             j++;
             retval = 0;
@@ -168,6 +169,7 @@ int confrontafile(char * file1, char *file2) {
     while (ch1 != EOF || ch2 != EOF) {
         if (ch1 != ch2) {
             //se i caratteri differiscono chiude i file ed esce ritornando 0
+            printf("i file %s e %s hanno nome uguale ma contenuto diverso\n", file1, file2);
             fclose(f1);
             fclose(f2);
             return 0;
