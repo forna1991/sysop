@@ -167,7 +167,7 @@ int openLog() {
         retval = 0;
     logger = fopen("/var/log/utility/mkbkp", "a");
     if (retval == 0) {
-        printf("%s : Nuovo file di log creato\n", getTime());
+        printf("Nuovo file di log creato %s", getTime());
         fprintf(logger, "Markers: (!!) debug, (II) informational, (WW) warning, (EE) error\n");
         fprintf(logger, "(II) Creazione log %s", getTime());
     }
