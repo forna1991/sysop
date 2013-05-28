@@ -30,11 +30,11 @@ int main (int argc, char **argv) {
 	openLog();
 
 	// stampa il comando inserito nel file di log
-	fprintf(logger, "(II) impostazioni inserite : "); 
+	//fprintf(logger, "(II) impostazioni inserite : "); 
 	for (i = 0; i < argc; i += 1) {
-		fprintf(logger, "%s ", argv[i]);
+		//fprintf(logger, "%s ", argv[i]);
 	}
-	fprintf(logger, "\n");
+	//fprintf(logger, "\n");
 
 	// controlla se è stata inserita l'opzione n e se è statsa inserita un opzione non valida
 	// termina l'esecuzione del programma
@@ -68,12 +68,12 @@ void* controllocaratteri(void *arg){
 		if(w == 'q'){
 			fprintf(logger, "(II) Premuto q -- Uscita dal programma al tempo: %s", getTime());
 			ext = 1;
-		}else if(w < 58 && w >=48){
-			fprintf(logger, "(II) Premuto %c -- Aggiornamento ogni %c secondi: %s",w,w, getTime());
-			dormi = w-48;
 		}else{
-			fprintf(logger, "(WW) Nessuna opzione per %c\n",w);
-		}
+			if(w < 58 && w >=48){
+				fprintf(logger, "(II) Premuto %c -- Aggiornamento ogni %c secondi: %s",w,w, getTime());
+				dormi = w-48;
+			}
+		} 
 	}
     return NULL;
 }
@@ -132,7 +132,7 @@ void* printProc(void *arg){
 		}
 
 		copiaArray(totalTimeCpu,totalTimeCpuBefore);
-	    time_total_before = time_total_after;
+		time_total_before = time_total_after;
 
 		sleep(dormi);
 	}
@@ -294,14 +294,13 @@ char* getTime() {
 /*Funzione che serve per apre il file di log*/
 int openLog() {
 	int retval;
-
 	// controlla se c'è già un file di log creato
-    if (logger = fopen("./LogPlive", "r")) {
+    if (logger = fopen("/var/log/utility/plive", "r")) {
         fclose(logger);
         retval = 1;
     } else
     	retval = 0;
-    logger = fopen("./LogPlive", "a");
+    logger = fopen("/var/log/utility/plive", "a");
 
     // se non esiste lo crea e ci scrive 2 righe di informazione
     if (retval == 0) {
