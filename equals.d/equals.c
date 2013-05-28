@@ -1,23 +1,25 @@
-#include "equals.h"
+#include "equals.h" //contiene tutti gli include e le firme dei metodi
 
-FILE *logger;
 
 int main(int argc, char **argv) {
 
-    openLog();
+    openlog("equals", LOG_CONS | LOG_ODELAY, LOG_LOCAL0); //apre il log
+    syslog(LOG_NOTICE, "Nuova esecuzione del programma al tempo: %s", getTime());
 
     // stampa il comando inserito nel file di log
-    fprintf(logger, "(II) Comando inserito : ");
+    char str[512] = "Comando inserito : ";
     int i;
     for (i = 0; i < argc; i += 1) {
-        fprintf(logger, "%s ", argv[i]);
+        sprintf(str, "%s %s", str, argv[i]);
     }
-    fprintf(logger, "\n");
+    sprintf(str, "%s\n", str);
+    printf("%s", str);
+    syslog(LOG_NOTICE, "%s", str);
 
     // se gli argomenti non sono 3 ciao ./equals patha e pathb allora lo stampo a video
     // lo stampo nel log e poi termino l'esecuzione
     if (argc != 3) {
-        fprintf(logger, "(EE) Wrong command -- usage : ./equals <path A> <path B> \n");
+        syslog(LOG_ERR, "Wrong command -- usage : ./equals <path A> <path B> \n");
         printf("Wrong command -- usage : ./equals <path A> <path B> \n");
         return 1;
     }
@@ -25,14 +27,14 @@ int main(int argc, char **argv) {
     // controllo che i due file/directory esistano sul disco altrimenti lo stampo nel log e a video
     FILE *file;
     if (!(file = fopen(argv[1], "r"))) {
-        fprintf(logger, "(EE) File/directory %s non trovato \n", argv[1]);
-        printf("(EE) File/directory %s non trovato \n", argv[1]);
+        syslog(LOG_ERR, "File/directory %s non trovato \n", argv[1]);
+        printf("File/directory %s non trovato \n", argv[1]);
         return 1;
     }
     fclose(file);
     if (!(file = fopen(argv[2], "r"))) {
-        fprintf(logger, "(EE) File/directory %s non trovato \n", argv[2]);
-        printf("(EE) File/directory %s non trovato \n", argv[2]);
+        syslog(LOG_ERR, "File/directory %s non trovato \n", argv[2]);
+        printf("File/directory %s non trovato \n", argv[2]);
         return 1;
     }
     fclose(file);
@@ -48,24 +50,26 @@ int main(int argc, char **argv) {
 
 }
 
+/**
+ * confronta i due path dati in input per decidere se sono equivalenti o meno
+ * @param patha primo path da confrontare con il secondo
+ * @param pathb secondo path da confrontare con il primo
+ * @return 1 se i due path sono un file identico anche per nome o una cartella
+ * con dentro file uguali tra loro 0 altrimenti
+ */
 int equals(char * patha, char * pathb) {
-    //controllo sul pathing
-    //se e' una cartella rilanciare su tutti gli elementi
-    //se e' un file vedere se nell'altro path c'e' un file e nel caso confrontarli tra loro
     int retval = 1; //TRUE
     struct stat a, b;
+    syslog(LOG_DEBUG, "confronto tra %s %s", patha, pathb);
 
     if (stat(patha, &a) == 0 && stat(pathb, &b) == 0) {
         if (a.st_mode & S_IFREG) {
             if (b.st_mode & S_IFREG) {
-                //scorrere tutti e due i file e se differiscono stampare i path
-                //e scrivere che sono differenti
+                //sono entrambi file li confronto tra di loro
                 if (confrontafile(patha, pathb)) {
-                    return 1;
-                    //printf("%s e %s coincidono perfettamente\n",patha,pathb);
+                    return 1; 
                 } else {
                     return 0;
-                    //printf("%s e %s sono differrenti\n",patha,pathb );
                 }
             } else if (b.st_mode & S_IFDIR) {
                 printf("%s è un file mentre %s è una cartella\n", patha, pathb);
@@ -76,7 +80,7 @@ int equals(char * patha, char * pathb) {
                 printf("%s è un file mentre %s è una cartella\n", pathb, patha);
                 return 0;
             } else if (b.st_mode & S_IFDIR) {
-                int r1 = 1;
+                //sono entrambe directory, lancio la funzione per confrontarle
                 return recursiveDirectory(pathb, patha);
             }
         }
@@ -84,6 +88,14 @@ int equals(char * patha, char * pathb) {
     return retval;
 }
 
+/**
+ * confronta due directory per vedere se hanno gli stessi file (solo come nome)
+ * su tutti i file delle due cartelle che hanno lo stesso nome rilancia la 
+ * equals che confronta i 2 file per vedere se sono uguali
+ * @param patha path della prima cartella
+ * @param pathb path della seconda cartella
+ * @return 1 se le cartelle hanno gli stessi file (solo come nome) 0 altrimenti
+ */
 int recursiveDirectory(char * patha, char * pathb) {
     struct dirent **drnt1;
     struct dirent **drnt2;
@@ -92,14 +104,16 @@ int recursiveDirectory(char * patha, char * pathb) {
     int i, j;
     int check1 = 1, check2 = 1;
     char tmp1[256], tmp2[256];
+    syslog(LOG_DEBUG, "controllo delle due cartelle %s %s", patha, pathb);
 
+    //restituisce un array ordinato di dirent
     n1 = scandir(patha, &drnt1, 0, alphasort);
     n2 = scandir(pathb, &drnt2, 0, alphasort);
 
-    j = 2;
-    for (i = 2; i < n1 || j < n2;) {
+    j = 2; //i contatori partono da 2 per saltare le cartelle "." e ".."
+    for (i = 2; i < n1 || j < n2;) { //finche non ho finito di scorrere entrambe le cartelle
         int cmp;
-        //printf("debug %d %d %d %d\n", i, j, n1, n2);
+        //controllo se uno dei due contatori e' uscito dal vettore
         if (i < n1 && j < n2) {
             strcpy(tmp1, drnt1[i]->d_name);
             strcpy(tmp2, drnt2[j]->d_name);
@@ -114,6 +128,8 @@ int recursiveDirectory(char * patha, char * pathb) {
             cmp = -1;
         }
 
+        //in base al risultato del cmp tra i 2 path decido quale puntatore portare
+        //avanti, se lo strcmp non da 0 porto avanti il risultato piu' piccolo
         if (cmp == 0) {
             i++;
             j++;
@@ -131,21 +147,26 @@ int recursiveDirectory(char * patha, char * pathb) {
     return retval;
 }
 
+/**
+ * confronta i due file per decidere se sono uguali o no
+ * @param file1 path del primo file
+ * @param file2 path del secondo file
+ * @return 1 se i file hanno uguale nome e contenuto, 0 altrimenti
+ */
 int confrontafile(char * file1, char *file2) {
-    /*if(strcmp(file1,file2)){
-        return 0;
-    }*/
-    //printf("%s %s\n", file1,file2);
     char ch1, ch2;
     FILE *f1, *f2;
     f1 = fopen(file1, "r");
     f2 = fopen(file2, "r");
     ch1 = getc(f1);
     ch2 = getc(f2);
+    syslog(LOG_DEBUG, "confronto dei due file %s %s", file1, file2);
+    
     if (ch1 != ch2)
         return 0;
     while (ch1 != EOF || ch2 != EOF) {
         if (ch1 != ch2) {
+            //se i caratteri differiscono chiude i file ed esce ritornando 0
             fclose(f1);
             fclose(f2);
             return 0;
@@ -153,38 +174,21 @@ int confrontafile(char * file1, char *file2) {
         ch2 = getc(f1);
         ch1 = getc(f2);
     }
+    //se arriva in fondo al ciclo vuol dire che i caratteri sono sempre stati 
+    //uguali quindi ritorna 1
     fclose(f1);
     fclose(f2);
     return 1;
 }
 
-//funzione che ritorna la data sottoforma di stringa
-
+/**
+ * funzione per stampare la data in formato leggibile da un umano
+ * @return una stringa con l'ora corrente
+ */
 char* getTime() {
     time_t rawtime;
     struct tm * timeinfo;
     time(&rawtime);
     timeinfo = localtime(&rawtime);
     return asctime(timeinfo);
-}
-
-/*Funzione che serve per apre il file di log*/
-int openLog() {
-    int retval;
-
-    // controlla se c'è già un file di log creato
-    if (logger = fopen("./LogEquals", "r")) {
-        fclose(logger);
-        retval = 1;
-    } else
-        retval = 0;
-    logger = fopen("./LogEquals", "a");
-
-    // se non esiste lo crea e ci scrive 2 righe di informazione
-    if (retval == 0) {
-        fprintf(logger, "Markers: (!!) notice, (II) informational, (WW) warning, (EE) error\n");
-        fprintf(logger, "(!!) Creazione log %s", getTime());
-    }
-    fprintf(logger, "(II) Nuova esecuzione del programma al tempo: %s", getTime());
-    return retval;
 }

@@ -12,8 +12,8 @@
 #include <time.h>
 #include <string.h>
 #include <sys/types.h>
+#include <syslog.h>
 
-int openLog();
 char* getTime();
 int equals(char *, char *);
 int confrontafile(char * file1,char *file2);
