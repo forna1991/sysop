@@ -255,12 +255,10 @@ void createBackup(char* path, char* bkpPath, char* target) {
     struct dirent *drnt;
     struct stat s;
     DIR *dr;
-    char* tmp;
+    char tmp[512];
     FILE *ofile;
     FILE *ifile;
-
-    tmp = malloc(snprintf(NULL, 0, "%s", target) + 1);
-    sprintf(tmp, "%s", target); //salvo il target in una variabile temporanea
+    strcpy(tmp, target); //salvo il target in una variabile temporanea
 
     if (stat(tmp, &s) == 0) { //metodo per verificare se il path tmp e' una cartella
         if (s.st_mode & S_IFREG) { //se e' un file lo aggiunge al bkp
@@ -273,9 +271,9 @@ void createBackup(char* path, char* bkpPath, char* target) {
             fputs(tm, ofile); //out del path del file
             int i;
             ifile = fopen(tmp, "r");
-            fprintf(ofile, "%d", s.st_size); //output della lunghezza del file
+            fprintf(ofile, "%lu", s.st_size); //output della lunghezza del file
             for (i = 0; i < s.st_size; ++i) { //output del file
-                ch = getc(ifile);
+                ch = fgetc(ifile);
                 fputc(ch, ofile);
             }
         } else if (s.st_mode & S_IFDIR) { //caso in cui target e' una cartella
@@ -306,14 +304,14 @@ void createBackup(char* path, char* bkpPath, char* target) {
 void print(FILE *f) {
     char * path = malloc(snprintf(NULL, 0, "%s", "") + 1);
     char ch;
-    int chars;
+    unsigned long chars;
     //scorro il file fino in fondo
     while (fscanf(f, "%s", path) != EOF) {
-        fscanf(f, "%d", &chars);
+        fscanf(f, "%lu", &chars);
         printf("%s\tsize: %lu\n", path, (chars * sizeof (char)));
         int i;
         for (i = 0; i < chars; i++) { //scorro tutti i byte del file
-            ch = getc(f);
+            ch = fgetc(f);
         }
     }
 }
@@ -323,19 +321,20 @@ void print(FILE *f) {
  * @param bkp file di backup da cui estrarre
  */
 void extractBkp(FILE * bkp) {
-    char * path = malloc(snprintf(NULL, 0, "%s", "") + 1);
-    char * basepath = malloc(snprintf(NULL, 0, "%s", "") + 1);
-    char tmp[256] = "";
-    char * full = malloc(256 * sizeof (char));
+    char path[512];
+    char basepath[512];
+    char tmp[512];
+    char full[512];
     char ch;
-    int i, file_size;
+    int i;
+    unsigned long file_size;
     sprintf(basepath, "%s%s", fvalue, "_d");
     FILE * out;
     if (basepath[strlen(basepath) - 1] != '/') {
         sprintf(basepath, "%s%s", basepath, "/");
     }
     while (fscanf(bkp, "%s", path) != EOF) {
-        fscanf(bkp, "%d", &file_size);
+        fscanf(bkp, "%lu", &file_size);
         sprintf(tmp, "%s%s%s", "./", basepath, path);
         strcpy(full, tmp);
 
@@ -347,15 +346,12 @@ void extractBkp(FILE * bkp) {
         recMkdir(tmp);
         tmp[i + 1] = '/';
 
-        out = fopen(full, "a+");
+        out = fopen(full, "w");
         for (i = 0; i < file_size; i++) {
-            ch = getc(bkp);
-            putc(ch, out);
+            ch = fgetc(bkp);
+            fputc(ch, out);
         }
     }
-    free(path);
-    free(basepath);
-    free(full);
 }
 
 /**
