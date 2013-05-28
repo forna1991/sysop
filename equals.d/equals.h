@@ -18,6 +18,7 @@ char* getTime();
 int equals(char *, char *);
 int confrontafile(char * file1,char *file2);
 int recursiveDirectory(char * patha, char * pathb);
+int openLog();
 
 #endif	/* EQUALS_H */
 

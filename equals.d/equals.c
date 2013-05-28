@@ -105,7 +105,6 @@ int recursiveDirectory(char * patha, char * pathb) {
     int retval = 1;
     int n1 = 0, n2 = 0;
     int i, j;
-    int check1 = 1, check2 = 1;
     char tmp1[256], tmp2[256];
 
     //restituisce un array ordinato di dirent

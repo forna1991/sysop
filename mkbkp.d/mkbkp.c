@@ -70,8 +70,14 @@ main(int argc, char **argv) {
 int checkInputs() {
     if (tflag == 1) {
         if (fflag == 1 || xflag == 1 || cflag == 1) {
+            //tflag viene usato da solo, se ci sono altri input torna 10
+            printf("l\'opzione -t non puo\' essere usata insieme ad altre opzioni!\n");
+            fprintf(logger, "(EE) -t usato insieme ad altre opzioni!\n");
             return 10;
         } else if (tvalue == NULL) {
+            //se non viene immesso niente come parametro del tvalue ritorna 11
+            printf("l\'opzione -t non ha un obiettivo!\n");
+            fprintf(logger, "(EE) -t usato senza obiettivo!\n");
             return 11;
         } else {
             fprintf(logger, "(II) Lettura archivio\n");
@@ -80,27 +86,58 @@ int checkInputs() {
     }
     if (xflag == 1) {
         if (fflag == 0) {
+            //-x prevede che gli venga passato un target attraverso -f
+            printf("-x non puo\' venire passato senza -f\n");
+            fprintf(logger, "(EE) -x inserito senza -f\n");
             return 21;
         } else if (fvalue == NULL) {
+            //il valore del target non puo' essere null
+            printf("il target passato con -f non e\' valido!\n");
+            fprintf(logger, "(EE) -f ha come target NULL!\n");
             return 22;
         } else if (cflag == 1) {
+            //impossibile decomprimere (-x) ed estrarre (-c) insieme
+            printf("-x e -c sono incompatibili tra loro, il programma puo\'"
+                    "estrarre o comprimere ma non entrambe le cose!\n");
+            fprintf(logger, "(EE) -x inserito senza -f\n");
             return 23;
         } else {
+            fprintf(logger, "(II) Estrazione archivio\n");
             return 1;
         }
     }
     if (cflag == 1) {
         if (fflag == 0) {
+            //-c prevede che gli venga passato un target con -f
+            printf("non e\' stato passato il target -f!\n");
+            fprintf(logger, "(EE) -c passato senza -f!\n");
             return 31;
         } else if (fvalue == NULL) {
+            //-f non puo' essere null
+            printf("il target passato con -f non e\' valido!\n");
+            fprintf(logger, "(EE) -f ha come target NULL!\n");
             return 32;
         } else {
+            fprintf(logger, "(II) Compressione archivio\n");
             return 2;
         }
     }
     if (fflag == 1) {
+        //target passato senza nessun altro parametro
+        printf("-f non puo\' essere passato da solo!\n");
+        fprintf(logger, "(EE) -f inserito da solo!\n");
         return 40;
     } else {
+        //nessun input passato
+        printf("Uso del programma \"mkbkp [options] [target]"
+                "\nOpzioni:\n\t-f [target] indica l\'obiettivo, necessario a "
+                "opzioni quale -c o -x"
+                "\n\t-c indica la creazione del backup, deve essere associato"
+                "a -f per indicare dove mettere il file"
+                "\n\t-x indica l\'estrazione del file indicato da -f, i file "
+                "verranno estratti nella posizione <nomebkp>_d"
+                "\n\t-t [target] indica la lettura del file di bkp target!\n");
+        fprintf(logger, "(II) nessun input passato stampa dell\'help\n");
         return 50;
     }
 }
@@ -123,15 +160,15 @@ char* getTime() {
  */
 int openLog() {
     int retval;
-    if (logger = fopen("./mkbkplog", "r")) {
+    if (logger = fopen("/var/log/utility/mkbkp", "r")) {
         fclose(logger);
         retval = 1;
     } else
         retval = 0;
-    logger = fopen("./mkbkplog", "a");
+    logger = fopen("/var/log/utility/mkbkp", "a");
     if (retval == 0) {
-        fprintf(logger, "Markers: (!!) notice, (II) informational, (WW) warning, (EE) error\n");
-        fprintf(logger, "(!!) Creazione log %s", getTime());
+        fprintf(logger, "Markers: (!!) debug, (II) informational, (WW) warning, (EE) error\n");
+        fprintf(logger, "(II) Creazione log %s", getTime());
     }
     fprintf(logger, "(II) Nuova esecuzione del programma al tempo: %s", getTime());
     return retval;
@@ -150,13 +187,7 @@ void work(int optindex, int argc, char** targets) {
     FILE *file;
     if (code >= 10) {
         fprintf(logger, "(EE) Errore negli input abort! \n");
-        printf("Errore nell\'input: Uso del programma \"mkbkp [options] [target]"
-                "\nOpzioni:\n\t-f [target] indica l\'obiettivo, necessario a "
-                    "opzioni quale -c o -x"
-                "\n\t-c indica la creazione del backup, deve essere associato"
-                    "a -t per indicare dove mettere il file"
-                "\n\t");
-        abort();
+        exit(0);
     } else if (code == 0) {
         if (file = fopen(tvalue, "r")) {
             char * str = malloc(256 * sizeof (char));
@@ -252,7 +283,7 @@ void createBackup(char* path, char* bkpPath, char* target) {
             }
         } else if (s.st_mode & S_IFDIR) { //caso in cui target e' una cartella
             //aggiusto il path
-            if (target[strlen(target) - 1] != '/') { 
+            if (target[strlen(target) - 1] != '/') {
                 sprintf(target, "%s%s", target, "/");
             }
             fprintf(logger, "(!!) Directory trovata %s\n", target);
@@ -275,7 +306,7 @@ void createBackup(char* path, char* bkpPath, char* target) {
  * metodo che restituisce in output il contenuto di un file di backup
  * @param f file di backup da leggere
  */
-void print(FILE *f) { 
+void print(FILE *f) {
     char * path = malloc(snprintf(NULL, 0, "%s", "") + 1);
     char ch;
     int chars;
@@ -337,7 +368,7 @@ void extractBkp(FILE * bkp) {
 static void recMkdir(const char *dir) {
 
     fprintf(logger, "(!!) Creo il path %s\n", dir);
-    
+
     char tmp[256];
     char *p = NULL;
     size_t len;
