@@ -162,7 +162,7 @@ int confrontafile(char * file1, char *file2) {
     f2 = fopen(file2, "r");
     ch1 = getc(f1);
     ch2 = getc(f2);
-    fprintf(logger, "(!!) confronto dei due file %s %s", file1, file2);
+    fprintf(logger, "(!!) confronto dei due file %s %s\n", file1, file2);
 
     if (ch1 != ch2)
         return 0;
@@ -214,6 +214,6 @@ int openLog() {
         fprintf(logger, "Markers: (!!) debug, (II) informational, (WW) warning, (EE) error\n");
         fprintf(logger, "(II) Creazione log %s", getTime());
     }
-    fprintf(logger, "(II) Nuova esecuzione del programma al tempo: %s", getTime());
+    fprintf(logger, "(II) Nuova esecuzione del programma al tempo: %s\n", getTime());
     return retval;
 }

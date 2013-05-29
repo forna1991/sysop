@@ -15,14 +15,16 @@ FILE *logger;
 main(int argc, char **argv) {
     int c;
     int i;
+    char string[512] = "(II) impostazioni inserite : ";
 
     openLog(); //apertura del file di log
     //output del comando inserito dall'utente nel log
-    fprintf(logger, "(II) impostazioni inserite : ");
     for (i = 0; i < argc; i += 1) {
-        fprintf(logger, "%s ", argv[i]);
+        strcat(string, " ");
+        strcat(string, argv[i]);
     }
-    fprintf(logger, "\n");
+    strcat(string, "\n");
+    fprintf(logger, "%s", string);
 
     //la getopt si occupa di riempire i campi per le opzioni accettate
     while ((c = getopt(argc, argv, "f:xct:")) != -1) {
@@ -228,19 +230,26 @@ void work(int optindex, int argc, char** targets) {
         char tmp[256];
         char * str = fvalue + strlen(fvalue) - 4;
         int cmp = strcmp(str, ".bkp");
-        if (cmp != 0 ) {
+        if (cmp != 0) {
             strcpy(tmp, fvalue);
             sprintf(tmp, "%s.bkp", fvalue);
         } else {
             strcpy(tmp, fvalue);
         }
-        if (file = fopen(tmp, "r")) {
-            fclose(file);
-            remove(tmp);
-        }
-        fprintf(logger, "(II) Inizio creazione del backup in %s\n", fvalue);
-        for (i = optindex; i < argc; i++) {
-            createBackup("./", tmp, targets[i]);
+        if (argc <= optindex) {
+            fprintf(logger, "(EE) nessun parametro passato in input!\n");
+            printf("nessun file da mettere nel backup\n");
+        } else {
+            if (file = fopen(tmp, "r")) {
+                fclose(file);
+                remove(tmp);
+            }
+            fprintf(logger, "(II) Inizio creazione del backup in %s\n", fvalue);
+            
+            for (i = optindex; i < argc; i++) {
+                createBackup(tmp, targets[i]);
+            }
+    
         }
     }
 }
@@ -251,10 +260,10 @@ void work(int optindex, int argc, char** targets) {
  * @param bkpPath percorso in cui creare il backup
  * @param target percorso del file/cartella da aggiungere al backup
  */
-void createBackup(char* path, char* bkpPath, char* target) {
-    struct dirent *drnt;
+void createBackup(char* bkpPath, char* target) {
+    struct dirent **drnt;
     struct stat s;
-    DIR *dr;
+    unsigned long dir_size;
     char tmp[512];
     FILE *ofile;
     FILE *ifile;
@@ -263,34 +272,40 @@ void createBackup(char* path, char* bkpPath, char* target) {
     if (stat(tmp, &s) == 0) { //metodo per verificare se il path tmp e' una cartella
         if (s.st_mode & S_IFREG) { //se e' un file lo aggiunge al bkp
             char ch;
-            char* tm = malloc(snprintf(NULL, 0, "%s\n", tmp) + 1);
+            char tm[512];
             sprintf(tm, "%s\n", tmp);
             fprintf(logger, "(!!) File trovato %s\n", tmp);
             ofile = fopen(bkpPath, "a");
             ifile = fopen(tmp, "r");
             fputs(tm, ofile); //out del path del file
+            sprintf(tm, "%lu ", s.st_size);
+            fputs(tm, ofile); //output della lunghezza del file
             int i;
             ifile = fopen(tmp, "r");
-            fprintf(ofile, "%lu", s.st_size); //output della lunghezza del file
             for (i = 0; i < s.st_size; ++i) { //output del file
                 ch = fgetc(ifile);
                 fputc(ch, ofile);
             }
+            fputc('\n', ofile);
+            fclose(ofile);
+            fclose(ifile);
         } else if (s.st_mode & S_IFDIR) { //caso in cui target e' una cartella
             //aggiusto il path
-            if (target[strlen(target) - 1] != '/') {
-                sprintf(target, "%s%s", target, "/");
+            char tmp2[512];
+            strcpy(tmp2, tmp);
+            if (tmp[strlen(tmp) - 1] != '/') {
+                sprintf(tmp, "%s%s", tmp, "/");
             }
-            fprintf(logger, "(!!) Directory trovata %s\n", target);
-
-            dr = opendir(target);
-            while (drnt = readdir(dr)) { //riavvio la funzione ricorsivamente sugli elementi della cartella
-                sprintf(tmp, "%s%s", target, drnt->d_name);
-                if (strcmp(".", drnt->d_name) == 0 || strcmp("..", drnt->d_name) == 0)
+            fprintf(logger, "(!!) Directory trovata %s\n", tmp);
+            
+            dir_size = scandir(tmp, &drnt, 0, alphasort);
+            int i;
+            for (i = 0; i < dir_size; i++) { //riavvio la funzione ricorsivamente sugli elementi della cartella
+                sprintf(tmp2, "%s%s", tmp, drnt[i]->d_name);
+                if (strcmp(".", drnt[i]->d_name) == 0 || strcmp("..", drnt[i]->d_name) == 0)
                     continue;
-                createBackup(path, bkpPath, tmp);
+                createBackup(bkpPath, tmp2);
             }
-            closedir(dr);
         }
     } else {
         fprintf(logger, "(WW) File non esistente \"%s\"\n", tmp);
@@ -302,7 +317,7 @@ void createBackup(char* path, char* bkpPath, char* target) {
  * @param f file di backup da leggere
  */
 void print(FILE *f) {
-    char * path = malloc(snprintf(NULL, 0, "%s", "") + 1);
+    char path[512];
     char ch;
     unsigned long chars;
     //scorro il file fino in fondo

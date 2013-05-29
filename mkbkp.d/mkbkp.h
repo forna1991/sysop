@@ -18,7 +18,7 @@
 
 int checkInputs();
 void work(int, int, char**);
-void createBackup(char*, char*, char*);
+void createBackup(char*, char*);
 int openLog();
 char* getTime();
 void print(FILE *);
