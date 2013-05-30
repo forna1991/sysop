@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <termios.h>
+#include <ncurses.h>
 
 /**
 La struttura data serve per memorizzarmi il pid di un singolo proecsso e il tempo che 
