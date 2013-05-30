@@ -30,11 +30,11 @@ int main (int argc, char **argv) {
 	openLog();
 
 	// stampa il comando inserito nel file di log
-	//fprintf(logger, "(II) impostazioni inserite : "); 
+	fprintf(logger, "(II) impostazioni inserite : "); 
 	for (i = 0; i < argc; i += 1) {
-		//fprintf(logger, "%s ", argv[i]);
+		fprintf(logger, "%s ", argv[i]);
 	}
-	//fprintf(logger, "\n");
+	fprintf(logger, "\n");
 
 	// controlla se è stata inserita l'opzione n e se è statsa inserita un opzione non valida
 	// termina l'esecuzione del programma
@@ -108,8 +108,8 @@ void* printProc(void *arg){
 		// con questo for calcola per ogni processo il tempo di cpu
 		for (i=0;i<LUNGHEZZA_ARRAY;i++){
 			if(totalTimeCpu[i].userTime !=0){
-			    //user_util[index].userTime = 100 * (totalTimeCpu[i].userTime - totalTimeCpuBefore[i].userTime) / (time_total_after - time_total_before);
-			    user_util[index].userTime = 100 * (totalTimeCpu[i].userTime - totalTimeCpuBefore[i].userTime) / (100 * dormi);
+			    user_util[index].userTime = 100 * (totalTimeCpu[i].userTime - totalTimeCpuBefore[i].userTime) / (time_total_after - time_total_before);
+			    //user_util[index].userTime = 100 * (totalTimeCpu[i].userTime - totalTimeCpuBefore[i].userTime) / (100 * dormi);
 			    user_util[index].pid = i;
 			    index++;
 			}
