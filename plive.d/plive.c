@@ -92,24 +92,19 @@ void* printProc(void *arg){
 	
 	// inizializzo l'array dei processi
 	getArrayUserTime(totalTimeCpuBefore);
-
-	//inizializzo il tempo di cpu totale
-	time_total_before = getUserCpu();
 	
 	while(!ext){
 
 		// prendo il nuovo valore
 		getArrayUserTime(totalTimeCpu);
 
-		time_total_after = getUserCpu();
+		//time_total_after = getUserCpu();
 		azzeraArray(user_util,NUMERO_MAX_PROC);
 		index =0;
 
 		// con questo for calcola per ogni processo il tempo di cpu
 		for (i=0;i<LUNGHEZZA_ARRAY;i++){
-			if(totalTimeCpu[i].userTime !=0){
-			    user_util[index].userTime = 100 * (totalTimeCpu[i].userTime - totalTimeCpuBefore[i].userTime) / (time_total_after - time_total_before);
-			    //user_util[index].userTime = 100 * (totalTimeCpu[i].userTime - totalTimeCpuBefore[i].userTime) / (100 * dormi);
+			    user_util[index].userTime = 100 * (totalTimeCpu[i].userTime - totalTimeCpuBefore[i].userTime) / (100 * dormi);
 			    user_util[index].pid = i;
 			    index++;
 			}
@@ -120,7 +115,7 @@ void* printProc(void *arg){
 
 		//faccio il clear screen
 		printf("\x1B[2J\x1B[1;1H");
-		//system("clear");
+        
 		int result;
 
 		//Stampo a video i vari dati
@@ -132,7 +127,7 @@ void* printProc(void *arg){
 		}
 
 		copiaArray(totalTimeCpu,totalTimeCpuBefore);
-		time_total_before = time_total_after;
+		//time_total_before = time_total_after;
 
 		sleep(dormi);
 	}
@@ -142,33 +137,30 @@ void* printProc(void *arg){
 void printInfo(int pid){
 	char target[256];
 	char stringa[256];
-	char ppid[256];
-	/*ppid = malloc(sizeof(char) * 256);
-	stringa = malloc(sizeof(char) * 256);
-
-	target = malloc(sizeof(char) * 256);*/
-	sprintf(target,"/proc/%d/status",pid);
+	char name[256];
+	sprintf(target,"/proc/%d/stat",pid);
 
 	int i=0;
 	FILE *ifile;
+    char * aux;
 	if(ifile = fopen(target, "r")){
 		while(fscanf(ifile,"%s",stringa)!=EOF) {
 			if(i==1){
-				snprintf(ppid,sizeof(char) * 256,"%s",stringa);
-				//printf("\t%s ", stringa);
+				snprintf(name,sizeof(char) * 256,"%s",stringa);
+                
+                // substring per togliere le parentesi
+                aux = name+1;
+                aux[strlen(aux)-1] = '\0';
+                
 			}
-			if(i==10){
+			if(i==3){
 				printf("\t%s", stringa);
 				fclose(ifile);
 			}
 		    i++;
 		}
 	}
-	printf("\t%s", ppid);
-	/*free(ppid);
-	free(stringa);
-	free(target);*/
-	//
+    printf("\t%s", aux);
 }
 
 //Funzione che mette nell'array le informazioni di ogni processo
@@ -254,23 +246,6 @@ float getProcCpu(char *percorso){
 	    i++;
 	}
 	return 0;
-}
-
-//funzione che ritorna un float che è il tempo che è stata utilizzata la cpu in totale
-float getUserCpu(){
-	char fileProc[100] = "/proc/stat";
-	int indexCpu=1;
-	char stringa[100];
-
-	// Apro il file /proc/stat che contiene tutte le info della cpu totali
-	FILE *sysfile;
-	sysfile = fopen(fileProc, "r");
-
-	// due scanf perchè il valore che mi interessa è il secondo dentro il file
-	fscanf(sysfile,"%s",stringa);
-	fscanf(sysfile,"%s",stringa);
-	fclose(sysfile);
-	return atof(stringa);
 }
 
 //funzione di supporto che azzera un array

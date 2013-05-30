@@ -27,7 +27,6 @@ struct data
 int openLog();
 char* getTime();
 void* printProc();
-float getUserCpu();
 float getProcCpu(char *pid);
 void azzeraArray(struct data * array,int n);
 void getArrayUserTime(struct data * array);
