@@ -57,6 +57,8 @@ int main(int argc, char **argv) {
                 abort();
         }
     }
+       
+    initscr();
 
     // crea e starta i due thread
     pthread_create(&mainthread, NULL, &controllocaratteri, NULL);
@@ -79,13 +81,13 @@ void* controllocaratteri(void *arg) {
             fprintf(logger, "(II) Premuto q -- Uscita dal programma al tempo: %s", getTime());
             ext = 1;
         } else {
-            if (w < 58 && w >= 48) {
+            if (w < '9' && w >= '0') {
                 fprintf(logger, "(II) Premuto %c -- Aggiornamento ogni %c secondi: %s", w, w, getTime());
-                dormi = w - 48;
+                dormi = w - '0';
             }
         }
     }
-    return NULL;
+    //return NULL;
 }
 
 //funzione che stampa i processi
@@ -93,7 +95,6 @@ void* controllocaratteri(void *arg) {
 void* printProc(void *arg) {
     int i;
     int index = 0;
-    initscr();
 
     struct data totalTimeCpu[LUNGHEZZA_ARRAY];
     struct data totalTimeCpuBefore[LUNGHEZZA_ARRAY];
