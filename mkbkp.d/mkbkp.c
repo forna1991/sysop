@@ -7,6 +7,8 @@
  * Luca Zamboni         151759
  */
 
+#include <sys/syslog.h>
+
 #include "mkbkp.h"
 
 int fflag = 0;
@@ -29,7 +31,7 @@ main(int argc, char **argv) {
         strcat(string, argv[i]);
     }
     strcat(string, "\n");
-    fprintf(logger, "%s", string);
+    syslog(LOG_NOTICE, "%s", string);
 
     //la getopt si occupa di riempire i campi per le opzioni accettate
     while ((c = getopt(argc, argv, "f:xct:")) != -1) {
@@ -49,7 +51,7 @@ main(int argc, char **argv) {
                 tvalue = optarg;
                 break;
             default:
-                fprintf(logger, "(EE) opzione non riconosciuta\n");
+                syslog(LOG_ERR, "(EE) opzione non riconosciuta\n");
                 abort();
         }
     }

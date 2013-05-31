@@ -7,6 +7,8 @@
  * Luca Zamboni         151759
  */
 
+#include <sys/syslog.h>
+
 #include "plive.h"
 
 //File di log
@@ -35,15 +37,17 @@ int main(int argc, char **argv) {
     int error = -1;
     int i;
     int nflag;
+    char temp[512]="(II) impostazioni inserite :";
 
-    openLog();
+    openlog("plive", LOG_ODELAY || LOG_PID, LOG_SYSLOG);
 
     // stampa il comando inserito nel file di log
-    fprintf(logger, "(II) impostazioni inserite : ");
     for (i = 0; i < argc; i += 1) {
-        fprintf(logger, "%s ", argv[i]);
+        strcat(temp, " ");
+        strcat(temp, argv[i]);
     }
-    fprintf(logger, "\n");
+    strcat(temp, "\n");
+    syslog(LOG_NOTICE, "%s", temp);
 
     // controlla se è stata inserita l'opzione n e se è statsa inserita un opzione non valida
     // termina l'esecuzione del programma
@@ -53,8 +57,8 @@ int main(int argc, char **argv) {
                 num_vis = atoi(optarg);
                 break;
             default:
-                fprintf(logger, "(EE) opzione non riconosciuta\n");
-                abort();
+                syslog(LOG_NOTICE, "(EE) opzione non riconosciuta\n");
+                exit(EXIT_SUCCESS);
         }
     }
        
@@ -78,11 +82,11 @@ void* controllocaratteri(void *arg) {
         w = getch();
 
         if (w == 'q') {
-            fprintf(logger, "(II) Premuto q -- Uscita dal programma al tempo: %s", getTime());
+            syslog(LOG_NOTICE, "(II) Premuto q -- Uscita dal programma al tempo: %s", getTime());
             ext = 1;
         } else {
             if (w < '9' && w >= '0') {
-                fprintf(logger, "(II) Premuto %c -- Aggiornamento ogni %c secondi: %s", w, w, getTime());
+                syslog(LOG_NOTICE, "(II) Premuto %c -- Aggiornamento ogni %c secondi: %s", w, w, getTime());
                 dormi = w - '0';
             }
         }
@@ -209,7 +213,7 @@ void getArrayUserTime(struct data * array) {
 
         //le cartelle che hanno come prima lettera un numero vuol dire 
         // che sono le cartelle che contengono le info dei processi
-        if (drnt->d_name[0] < 58 && drnt->d_name[0] >= 48) {
+        if (drnt->d_name[0] < '9' && drnt->d_name[0] >= '0') {
             //creo la stringa contenente il percorso del file stat dento proc/<pid>
             sprintf(tmp, "%s%s%s", target, drnt->d_name, "/stat");
             pid = atoi(drnt->d_name);
@@ -291,25 +295,4 @@ char* getTime() {
     time(&rawtime);
     timeinfo = localtime(&rawtime);
     return asctime(timeinfo);
-}
-
-/*Funzione che serve per apre il file di log*/
-int openLog() {
-    int retval;
-    // controlla se c'è già un file di log creato
-    if (logger = fopen("/var/log/utility/plive", "r")) {
-        fclose(logger);
-        retval = 1;
-    } else
-        retval = 0;
-    logger = fopen("/var/log/utility/plive", "a");
-
-    // se non esiste lo crea e ci scrive 2 righe di informazione
-    if (retval == 0) {
-        printf("Nuovo file di log creato %s", getTime());
-        fprintf(logger, "Markers: (!!) notice, (II) informational, (WW) warning, (EE) error\n");
-        fprintf(logger, "(!!) Creazione log %s", getTime());
-    }
-    fprintf(logger, "(II) Nuova esecuzione del programma al tempo: %s", getTime());
-    return retval;
 }

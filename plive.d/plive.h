@@ -34,7 +34,6 @@ struct data
 	int userTime;
 };
 
-int openLog();
 char* getTime();
 void* printProc();
 float getProcCpu(char *pid);
