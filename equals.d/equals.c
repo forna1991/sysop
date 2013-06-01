@@ -13,22 +13,24 @@ FILE * logger;
 
 int main(int argc, char **argv) {
     int retval;
+    int i;
     
-    openLog(); //apre il log
-    fprintf(logger, "(II) Nuova esecuzione del programma al tempo: %s", getTime());
+    char temp[512]="(II) impostazioni inserite :";
+
+    openlog("plive", LOG_ODELAY || LOG_PID, LOG_SYSLOG);
 
     // stampa il comando inserito nel file di log
-    int i;
-    fprintf(logger, "(II) Comando inserito : ");
     for (i = 0; i < argc; i += 1) {
-        fprintf(logger, "%s ", argv[i]);
+        strcat(temp, " ");
+        strcat(temp, argv[i]);
     }
-    fprintf(logger, "\n");
+    strcat(temp, "\n");
+    syslog(LOG_NOTICE, "%s", temp);
 
     // se gli argomenti non sono 3 ciao ./equals patha e pathb allora lo stampo a video
     // lo stampo nel log e poi termino l'esecuzione
     if (argc != 3) {
-        fprintf(logger, "(EE) Wrong command -- usage : ./equals <path A> <path B> \n");
+        syslog(LOG_ERR, "(EE) Wrong command -- usage : ./equals <path A> <path B> \n");
         printf("Wrong command -- usage : ./equals <path A> <path B> \n");
         return 1;
     }
@@ -36,13 +38,13 @@ int main(int argc, char **argv) {
     // controllo che i due file/directory esistano sul disco altrimenti lo stampo nel log e a video
     FILE *file;
     if (!(file = fopen(argv[1], "r"))) {
-        fprintf(logger, "(EE) File/directory %s non trovato \n", argv[1]);
+        syslog(LOG_ERR, "(EE) File/directory %s non trovato", argv[1]);
         printf("File/directory %s non trovato \n", argv[1]);
         return 1;
     }
     fclose(file);
     if (!(file = fopen(argv[2], "r"))) {
-        fprintf(logger, "File/directory %s non trovato \n", argv[2]);
+        syslog(LOG_ERR,  "File/directory %s non trovato", argv[2]);
         printf("File/directory %s non trovato \n", argv[2]);
         return 1;
     }
@@ -56,8 +58,7 @@ int main(int argc, char **argv) {
     realpath(argv[2], pt2);
 
     retval = !equals(pt1, pt2);
-    printf("%d\n", retval);
-    fclose(logger);
+    //printf("%d\n", retval);
     return retval;
 
 }
@@ -70,7 +71,7 @@ int main(int argc, char **argv) {
  * con dentro file uguali tra loro 0 altrimenti
  */
 int equals(char * patha, char * pathb) {
-    fprintf(logger, "(!!) confronto tra %s %s", patha, pathb);
+    syslog(LOG_NOTICE, "(!!) confronto tra %s %s", patha, pathb);
     int retval = 1; //TRUE
     struct stat a, b;
 
@@ -109,7 +110,7 @@ int equals(char * patha, char * pathb) {
  * @return 1 se le cartelle hanno gli stessi file (solo come nome) 0 altrimenti
  */
 int recursiveDirectory(char * patha, char * pathb) {
-    fprintf(logger, "(!!) controllo delle due cartelle %s %s", patha, pathb);
+    syslog(LOG_NOTICE, "(!!) controllo delle due cartelle %s %s", patha, pathb);
     struct dirent **drnt1;
     struct dirent **drnt2;
     int retval = 1;
@@ -171,7 +172,7 @@ int confrontafile(char * file1, char *file2) {
     f2 = fopen(file2, "r");
     ch1 = getc(f1);
     ch2 = getc(f2);
-    fprintf(logger, "(!!) confronto dei due file %s %s\n", file1, file2);
+    syslog(LOG_NOTICE, "(!!) confronto dei due file %s %s", file1, file2);
 
     if (ch1 != ch2)
         return 0;
@@ -203,26 +204,4 @@ char* getTime() {
     time(&rawtime);
     timeinfo = localtime(&rawtime);
     return asctime(timeinfo);
-}
-
-/*Funzione che serve per apre il file di log*/
-int openLog() {
-    int retval;
-
-    // controlla se c'è già un file di log creato
-    if (logger = fopen("/var/log/utility/equals", "r")) {
-        fclose(logger);
-        retval = 1;
-    } else
-        retval = 0;
-    logger = fopen("/var/log/utility/equals", "a");
-
-    // se non esiste lo crea e ci scrive 2 righe di informazione
-    if (retval == 0) {
-        printf("Nuovo file di log creato %s", getTime());
-        fprintf(logger, "Markers: (!!) debug, (II) informational, (WW) warning, (EE) error\n");
-        fprintf(logger, "(II) Creazione log %s", getTime());
-    }
-    fprintf(logger, "(II) Nuova esecuzione del programma al tempo: %s\n", getTime());
-    return retval;
 }

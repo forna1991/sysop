@@ -20,6 +20,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <sys/syslog.h>
 
 int checkInputs();
 void work(int, int, char**);
