@@ -11,9 +11,6 @@
 
 #include "plive.h"
 
-//File di log
-FILE *logger;
-
 const int LUNGHEZZA_ARRAY = 100000;
 const int NUMERO_MAX_PROC = 1000;
 
